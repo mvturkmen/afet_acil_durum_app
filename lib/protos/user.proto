@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-message UserInfo {
-  string name = 1;
-  string surname = 2;
-  string bloodGroup = 3;
-  string emergencyContact = 4;
-}
