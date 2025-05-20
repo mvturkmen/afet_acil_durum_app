@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'user_info.dart';
+import 'pages/anasayfa.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +17,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
       ),
-      home: const MyHomePage(title: 'Afet Acil Durum Uygulaması'),
+
+     home: const Anasayfa(),
+
     );
   }
 }
