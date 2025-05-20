@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'user_info.dart';
+import 'pages/user_info.dart';
 import 'pages/anasayfa.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
       ),
 
-     home: const Anasayfa(),
-
+      home: const Anasayfa(),
     );
   }
 }
