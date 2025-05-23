@@ -1,10 +1,13 @@
 import 'acilKisiler.dart';
 import 'package:flutter/material.dart';
+import 'user_info.dart';
+
 class Anasayfa extends StatefulWidget {
   const Anasayfa({super.key});
   @override
   AnasayfaState createState() => AnasayfaState();
 }
+
 class AnasayfaState extends State<Anasayfa> {
   String textField1 = '';
   String textField2 = '';
@@ -288,6 +291,19 @@ class AnasayfaState extends State<Anasayfa> {
                                       width: 38,
                                       height: 38,
                                       child: Icon(Icons.settings, color: Colors.white), // örnek ek ikon
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => UserInfoPage()),
+                                      );
+                                    },
+                                    child: SizedBox(
+                                      width: 38,
+                                      height: 38,
+                                      child: Icon(Icons.person, color: Colors.white),
                                     ),
                                   ),
                                 ],
