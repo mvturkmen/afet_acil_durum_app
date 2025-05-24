@@ -1,11 +1,14 @@
-import 'acilKisiler.dart';
+import 'package:afet_acil_durum_app/pages/map.dart';
+import 'package:afet_acil_durum_app/pages/settings.dart';
+import 'package:afet_acil_durum_app/pages/notificaiton_page.dart';
+import 'emergency_contact.dart';
 import 'package:flutter/material.dart';
-class Anasayfa extends StatefulWidget {
-  const Anasayfa({super.key});
+class Homepage extends StatefulWidget {
+  const Homepage({super.key});
   @override
-  AnasayfaState createState() => AnasayfaState();
+  HomepageState createState() => HomepageState();
 }
-class AnasayfaState extends State<Anasayfa> {
+class HomepageState extends State<Homepage> {
   String textField1 = '';
   String textField2 = '';
   @override
@@ -230,13 +233,13 @@ class AnasayfaState extends State<Anasayfa> {
                               padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 21),
                               width: double.infinity,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Eşit boşluk dağılımı sağlar
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => Acil_kisiler()),
+                                        MaterialPageRoute(builder: (context) => Settings()),
                                       );
                                     },
                                     child: SizedBox(
@@ -252,7 +255,7 @@ class AnasayfaState extends State<Anasayfa> {
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => Acil_kisiler()),
+                                        MaterialPageRoute(builder: (context) => EmergencyContact()),
                                       );
                                     },
                                     child: SizedBox(
@@ -268,7 +271,7 @@ class AnasayfaState extends State<Anasayfa> {
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => Acil_kisiler()),
+                                        MaterialPageRoute(builder: (context) => NotificationPage()),
                                       );
                                     },
                                     child: SizedBox(
@@ -281,7 +284,7 @@ class AnasayfaState extends State<Anasayfa> {
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => Acil_kisiler()),
+                                        MaterialPageRoute(builder: (context) => MapArea()),
                                       );
                                     },
                                     child: SizedBox(

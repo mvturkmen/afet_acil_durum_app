@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-class Acil_kisiler extends StatefulWidget {
-  const Acil_kisiler({super.key});
+class EmergencyContact extends StatefulWidget {
+  const EmergencyContact({super.key});
   @override
-  Acil_kisilerState createState() => Acil_kisilerState();
+  EmergencyContactState createState() => EmergencyContactState();
 }
-class Acil_kisilerState extends State<Acil_kisiler> {
+class EmergencyContactState extends State<EmergencyContact> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

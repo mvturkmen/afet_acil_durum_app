@@ -1,6 +1,7 @@
+import 'package:afet_acil_durum_app/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'pages/user_info.dart';
-import 'pages/anasayfa.dart';
+import 'pages/homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
       ),
 
-      home: const Anasayfa(),
+      home: const Login(),
     );
   }
 }
