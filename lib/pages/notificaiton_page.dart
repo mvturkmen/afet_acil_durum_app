@@ -1,178 +1,375 @@
 import 'package:flutter/material.dart';
+import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
+import 'package:afet_acil_durum_app/pages/homepage.dart';
+import 'package:afet_acil_durum_app/pages/map.dart';
+import 'package:afet_acil_durum_app/pages/notificaiton_page.dart';
+import 'package:afet_acil_durum_app/pages/user_info.dart';
+import 'package:afet_acil_durum_app/pages/settings.dart';
 
-class NotificationPage extends StatefulWidget {
-  const NotificationPage({super.key});
+class NotificaitonPage extends StatefulWidget {
+  const NotificaitonPage({super.key});
 
   @override
-  NotificationPageState createState() => NotificationPageState();
+  NotificaitonPageState createState() => NotificaitonPageState();
 }
 
-class NotificationPageState extends State<NotificationPage> {
+class NotificaitonPageState extends State<NotificaitonPage> {
+  final List<Map<String, dynamic>> bildirimler = [
+    {
+      "baslik": "Acil Durum Uyarısı",
+      "mesaj": "Bölgenizde deprem riski tespit edildi. Hazırlıklı olun.",
+      "zaman": "5 dakika önce",
+      "tip": "acil",
+      "okundu": false,
+    },
+    {
+      "baslik": "Hava Durumu",
+      "mesaj": "Bugün şiddetli yağmur bekleniyor. Dışarı çıkarken dikkatli olun.",
+      "zaman": "2 saat önce",
+      "tip": "uyari",
+      "okundu": false,
+    },
+    {
+      "baslik": "Güvenlik Bilgilendirmesi",
+      "mesaj": "Acil durum çantanızı kontrol etmeyi unutmayın.",
+      "zaman": "1 gün önce",
+      "tip": "bilgi",
+      "okundu": true,
+    },
+    {
+      "baslik": "Toplanma Noktası",
+      "mesaj": "Size en yakın toplanma noktası güncellendi.",
+      "zaman": "2 gün önce",
+      "tip": "bilgi",
+      "okundu": true,
+    },
+    {
+      "baslik": "Sistem Güncellemesi",
+      "mesaj": "Uygulama yeni özelliklerle güncellendi.",
+      "zaman": "1 hafta önce",
+      "tip": "sistem",
+      "okundu": true,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: Container(
-          constraints: const BoxConstraints.expand(),
-          color: const Color(0xFFFFFFFF),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 60),
+              Text(
+                "BİLDİRİMLER",
+                style: TextStyle(
+                  color: Colors.grey[800],
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 40),
               Expanded(
-                child: Container(
-                  color: const Color(0xFFFFFFFF),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 81, bottom: 28, left: 35),
-                          child: const Text(
-                            "BİLDİRİMLER\n",
-                            style: TextStyle(
-                              color: Color(0xFF263238),
-                              fontSize: 55,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        IntrinsicHeight(
-                          child: Container(
-                            width: double.infinity,
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 105),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      IntrinsicHeight(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(29),
-                                            color: const Color(0xFF90A4AE),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: const Color(0x40000000),
-                                                blurRadius: 4,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          padding: const EdgeInsets.only(top: 36, bottom: 362),
-                                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                                          width: double.infinity,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: List.generate(5, (index) {
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(7),
-                                                  color: const Color(0xFFFFFFFF),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: const Color(0x40000000),
-                                                      blurRadius: 4,
-                                                      offset: const Offset(0, 4),
-                                                    ),
-                                                  ],
-                                                ),
-                                                margin: const EdgeInsets.only(bottom: 12, left: 21, right: 21),
-                                                height: 35,
-                                                width: double.infinity,
-                                                child: const SizedBox(),
-                                              );
-                                            }),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Positioned(
-                                  bottom: 42,
-                                  left: 147,
-                                  width: 102,
-                                  height: 85,
-                                  child: Image(
-                                    image: NetworkImage(
-                                      "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/5pq04jd0_expires_30_days.png",
-                                    ),
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildNotificationContainer(),
+                      const SizedBox(height: 24),
+                      buildBigBell(),
+                    ],
                   ),
                 ),
               ),
-              IntrinsicHeight(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF90A4AE),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x40000000),
-                        blurRadius: 4,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 22),
-                  width: double.infinity,
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 33),
-                        width: 38,
-                        height: 38,
-                        child: const Image(
-                          image: NetworkImage(
-                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/vv6odcs5_expires_30_days.png",
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Container(
-                        width: 34,
-                        height: 37,
-                        child: const Image(
-                          image: NetworkImage(
-                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/g5vqdknx_expires_30_days.png",
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        margin: const EdgeInsets.only(right: 47),
-                        width: 38,
-                        height: 30,
-                        child: const Image(
-                          image: NetworkImage(
-                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/lkvks9cs_expires_30_days.png",
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Container(
-                        width: 34,
-                        height: 30,
-                        child: const Icon(Icons.notifications, color: Colors.white),
-                      ),
-                    ],
-                  ),
+              const SizedBox(height: 16),
+              buildBottomNavigationBar(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildNotificationContainer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.blueGrey.shade300,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blueGrey.shade100.withOpacity(0.5),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.notifications_active,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Son Bildirimler",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 20),
+          ...bildirimler.map((bildirim) => buildNotificationItem(bildirim)).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildNotificationItem(Map<String, dynamic> bildirim) {
+    Color tipRengi = bildirim['tip'] == 'acil'
+        ? Colors.red.shade600
+        : bildirim['tip'] == 'uyari'
+        ? Colors.orange.shade600
+        : bildirim['tip'] == 'sistem'
+        ? Colors.blue.shade600
+        : Colors.green.shade600;
+
+    IconData tipIcon = bildirim['tip'] == 'acil'
+        ? Icons.warning
+        : bildirim['tip'] == 'uyari'
+        ? Icons.info
+        : bildirim['tip'] == 'sistem'
+        ? Icons.system_update
+        : Icons.notifications;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          bildirim['okundu'] = true;
+        });
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            backgroundColor: Colors.grey[100],
+            title: Row(
+              children: [
+                Icon(tipIcon, color: tipRengi, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    bildirim['baslik'],
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(bildirim['mesaj']),
+                const SizedBox(height: 12),
+                Text(
+                  bildirim['zaman'],
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.blueGrey.shade700,
+                ),
+                child: const Text("Kapat", style: TextStyle(fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: bildirim['okundu'] ? Colors.white.withOpacity(0.7) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: tipRengi.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              tipIcon,
+              color: tipRengi,
+              size: 20,
+            ),
+          ),
+          title: Text(
+            bildirim['baslik'],
+            style: TextStyle(
+              fontWeight: bildirim['okundu'] ? FontWeight.w500 : FontWeight.bold,
+              fontSize: 14,
+              color: Colors.grey[800],
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                bildirim['mesaj'],
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                bildirim['zaman'],
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey[500],
+                ),
+              ),
+            ],
+          ),
+          trailing: !bildirim['okundu']
+              ? Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: tipRengi,
+              shape: BoxShape.circle,
+            ),
+          )
+              : null,
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget buildBigBell() {
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Acil durum alarmı aktifleştirildi!')),
+          );
+        },
+        child: Container(
+          width: 90,
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.red.shade700,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.shade300.withOpacity(0.7),
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.notifications_active,
+            color: Colors.white,
+            size: 48,
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Widget buildBottomNavigationBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey.shade700,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 6,
+            offset: Offset(0, 4),
+          ),
+        ],
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          navIcon(
+            icon: Icons.settings,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Settings())),
+          ),
+          navIcon(
+            icon: Icons.people,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+          ),
+          navIcon(
+            icon: Icons.home,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+          ),
+
+          navIcon(
+            icon: Icons.notifications,
+            isActive: true,
+            onTap: () {}, // Zaten bu sayfadayız
+          ),
+          navIcon(
+            icon: Icons.map,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget navIcon({required IconData icon, required VoidCallback onTap, bool isActive = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: isActive ? BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+        ) : null,
+        child: Icon(
+            icon,
+            color: isActive ? Colors.white : Colors.white70,
+            size: 32
         ),
       ),
     );

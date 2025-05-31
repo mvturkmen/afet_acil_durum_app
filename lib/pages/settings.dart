@@ -1,169 +1,285 @@
+
 import 'package:flutter/material.dart';
+import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
+import 'package:afet_acil_durum_app/pages/homepage.dart';
+import 'package:afet_acil_durum_app/pages/map.dart';
+import 'package:afet_acil_durum_app/pages/notificaiton_page.dart';
+import 'package:afet_acil_durum_app/pages/user_info.dart';
+
+
+
 class Settings extends StatefulWidget {
   const Settings({super.key});
   @override
   SettingsState createState() => SettingsState();
 }
+
 class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: Container(
-          constraints: const BoxConstraints.expand(),
-          color: Color(0xFFFFFFFF),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 60),
+              Text(
+                "AYARLAR",
+                style: TextStyle(
+                  color: Colors.grey[800],
+                  fontSize: 34,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 40),
               Expanded(
-                child: Container(
-                  color: Color(0xFFFFFFFF),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only( top: 52, bottom: 41, left: 30),
-                            child: Text(
-                              "Ayarlar",
-                              style: TextStyle(
-                                color: Color(0xFF263238),
-                                fontSize: 55,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            color: Color(0xFF90A4AE),
-                            margin: const EdgeInsets.only( bottom: 29, left: 30, right: 30),
-                            height: 113,
-                            width: double.infinity,
-                            child: SizedBox(),
-                          ),
-                          Container(
-                            color: Color(0xFF90A4AE),
-                            margin: const EdgeInsets.only( bottom: 21, left: 30, right: 30),
-                            height: 66,
-                            width: double.infinity,
-                            child: SizedBox(),
-                          ),
-                          Container(
-                            color: Color(0xFF90A4AE),
-                            margin: const EdgeInsets.only( bottom: 21, left: 30, right: 30),
-                            height: 66,
-                            width: double.infinity,
-                            child: SizedBox(),
-                          ),
-                          Container(
-                            color: Color(0xFF90A4AE),
-                            margin: const EdgeInsets.only( bottom: 21, left: 30, right: 30),
-                            height: 66,
-                            width: double.infinity,
-                            child: SizedBox(),
-                          ),
-                          Container(
-                            color: Color(0xFF90A4AE),
-                            margin: const EdgeInsets.only( bottom: 166, left: 30, right: 30),
-                            height: 66,
-                            width: double.infinity,
-                            child: SizedBox(),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only( bottom: 32, left: 165),
-                            height: 1,
-                            width: double.infinity,
-                            child: SizedBox(),
-                          ),
-                          InkWell(
-                            onTap: () { print('Pressed'); },
-                            child: Container(
-                                margin: const EdgeInsets.only( left: 150),
-                                width: 102,
-                                height: 85,
-                                child: Image.network(
-                                  "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/81yxot3g_expires_30_days.png",
-                                  fit: BoxFit.fill,
-                                )
-                            ),
-                          ),
-                          IntrinsicHeight(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFF90A4AE),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0x40000000),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.only( top: 20, bottom: 19, left: 25),
-                              width: 412,
-                              child: Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () { print('Pressed'); },
-                                      child: Container(
-                                          margin: const EdgeInsets.only( right: 41),
-                                          width: 38,
-                                          height: 38,
-                                          child: Image.network(
-                                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/lrryrv8r_expires_30_days.png",
-                                            fit: BoxFit.fill,
-                                          )
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () { print('Pressed'); },
-                                      child: Container(
-                                          margin: const EdgeInsets.only( right: 150),
-                                          width: 34,
-                                          height: 37,
-                                          child: Image.network(
-                                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/2bz2niln_expires_30_days.png",
-                                            fit: BoxFit.fill,
-                                          )
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () { print('Pressed'); },
-                                      child: Container(
-                                          margin: const EdgeInsets.only( right: 38),
-                                          width: 38,
-                                          height: 30,
-                                          child: Image.network(
-                                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/jd9hqgvr_expires_30_days.png",
-                                            fit: BoxFit.fill,
-                                          )
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () { print('Pressed'); },
-                                      child: Container(
-                                          width: 34,
-                                          height: 30,
-                                          child: Image.network(
-                                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/22j4aquq_expires_30_days.png",
-                                            fit: BoxFit.fill,
-                                          )
-                                      ),
-                                    ),
-                                  ]
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildSettingsCard(
+                        title: "Profil Ayarları",
+                        subtitle: "Kişisel bilgilerinizi düzenleyin",
+                        icon: Icons.person,
+                        height: 80,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => UserInfoPage()),
+                          );
+                        },
+                      ),
+                      buildSettingsCard(
+                        title: "Bildirim Ayarları",
+                        subtitle: "Bildirim tercihlerinizi ayarlayın",
+                        icon: Icons.notifications,
+                        height: 80,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Bildirim Ayarlarıı seçildi!')),
+                          );
+                        },
+                      ),
+                      buildSettingsCard(
+                        title: "Gizlilik",
+                        subtitle: "Gizlilik ve güvenlik ayarları",
+                        icon: Icons.privacy_tip,
+                        height: 80,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Gizlilik seçildi!')),
+                          );
+                        },
+                      ),
+                      buildSettingsCard(
+                        title: "Konum Settingsı",
+                        subtitle: "Konum paylaşımı ve harita Settingsı",
+                        icon: Icons.location_on,
+                        height: 80,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Konum Settingsı seçildi!')),
+                          );
+                        },
+                      ),
+                      buildSettingsCard(
+                        title: "Uygulama Ayarları",
+                        subtitle: "Genel uygulama tercihleri",
+                        icon: Icons.settings,
+                        height: 80,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Uygulama Ayarları seçildi!')),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 40),
+                      buildBigBell(),
+                    ],
                   ),
                 ),
               ),
+              const SizedBox(height: 8),
+              buildBottomNavigationBar(context),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget buildSettingsCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required double height,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: Colors.blueGrey.shade300,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blueGrey.shade100.withOpacity(0.5),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        height: height,
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white70,
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildBigBell() {
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Acil durum alarmı aktifleştirildi!')),
+          );
+        },
+        child: Container(
+          width: 90,
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.red.shade700,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.shade300.withOpacity(0.7),
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.notifications_active,
+            color: Colors.white,
+            size: 48,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildBottomNavigationBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey.shade700,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 6,
+            offset: Offset(0, 4),
+          ),
+        ],
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          navIcon(
+            icon: Icons.settings,
+            isActive: true,
+            onTap: () {}, // Zaten bu sayfadayız
+          ),
+          navIcon(
+            icon: Icons.people,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+          ),
+          navIcon(
+            icon: Icons.home,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+          ),
+          navIcon(
+            icon: Icons.notifications,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificaitonPage())),
+          ),
+          navIcon(
+            icon: Icons.map,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget navIcon({required IconData icon, required VoidCallback onTap, bool isActive = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: isActive
+            ? BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+        )
+            : null,
+        child: Icon(
+          icon,
+          color: isActive ? Colors.white : Colors.white70,
+          size: 32,
+        ),
+      ),
+    );
+  }
 }
+
+
