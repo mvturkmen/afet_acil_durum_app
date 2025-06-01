@@ -1,8 +1,6 @@
 import 'package:afet_acil_durum_app/pages/login.dart';
-import 'package:flutter/material.dart';
 
-import 'pages/user_info.dart';
-import 'pages/homepage.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
