@@ -1,5 +1,6 @@
 import 'package:afet_acil_durum_app/pages/login.dart';
 import 'package:flutter/material.dart';
+
 import 'pages/user_info.dart';
 import 'pages/homepage.dart';
 
@@ -13,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Afet Acil Durum Uygulaması',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
@@ -33,15 +35,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<void> _navigateToUserInfoPage(BuildContext context) async {
-    if (!mounted) return;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const UserInfoPage()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,15 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Uygulama Sayfası'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _navigateToUserInfoPage(context);
-              },
-              child: const Text('Kullanıcı Bilgilerini Düzenle'),
-            ),
+          children: const <Widget>[
+            Text('Uygulama Sayfası'),
+            SizedBox(height: 20),
           ],
         ),
       ),
