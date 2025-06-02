@@ -1,12 +1,11 @@
-import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
-import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notificaiton_page.dart';
-import 'package:afet_acil_durum_app/pages/user_info.dart';
-import 'package:afet_acil_durum_app/pages/settings.dart';
-import 'package:afet_acil_durum_app/service/notiService.dart'; // Bildirim servisinizi import edin
-
 import 'package:flutter/material.dart';
+import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
+import 'package:afet_acil_durum_app/pages/map.dart';
+import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:afet_acil_durum_app/pages/settings.dart';
+import 'package:afet_acil_durum_app/service/notiService.dart';
+import 'package:afet_acil_durum_app/services/location_service.dart';
+
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -140,16 +139,26 @@ class HomepageState extends State<Homepage> {
   Widget buildLocationCard() {
     return GestureDetector(
       onTap: () async {
-        // Konum paylaşım bildirimi gönder
-        await _sendLocationNotification();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Konum paylaşım bildirimi gönderildi!'),
-            backgroundColor: Colors.blueGrey,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        MyPosition? position = await LocationService().getCurrentLocation();
+        if (position != null) {
+          String address = await LocationService().getAddressFromPosition(position);
+
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: Text('Konum Bilgisi'),
+              content: Text(
+                '📍 Enlem: ${position.latitude}, Boylam: ${position.longitude}\n\n📫 Adres: $address',
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Konum alınamadı.")),
+          );
+        }
+
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 24),
@@ -176,7 +185,7 @@ class HomepageState extends State<Homepage> {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                "Konumumu Paylaş",
+                "Konumumu Göster",
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 21,
@@ -437,4 +446,5 @@ class HomepageState extends State<Homepage> {
       body: 'Genel alarm sistemi aktif edildi.',
     );
   }
+
 }

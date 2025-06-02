@@ -1,12 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
 import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notificaiton_page.dart';
+import 'package:afet_acil_durum_app/pages/notification_page.dart';
 import 'package:afet_acil_durum_app/pages/user_info.dart';
-
-
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -41,8 +38,8 @@ class SettingsState extends State<Settings> {
                   child: Column(
                     children: [
                       buildSettingsCard(
-                        title: "Profil Ayarları",
-                        subtitle: "Kişisel bilgilerinizi düzenleyin",
+                        title: "Acil Durum Bilgileri",
+                        subtitle: "Acil durumda lazım olacak bilgiler.",
                         icon: Icons.person,
                         height: 80,
                         onTap: () {
@@ -54,7 +51,7 @@ class SettingsState extends State<Settings> {
                       ),
                       buildSettingsCard(
                         title: "Bildirim Ayarları",
-                        subtitle: "Bildirim tercihlerinizi ayarlayın",
+                        subtitle: "Bildirim tercihleri",
                         icon: Icons.notifications,
                         height: 80,
                         onTap: () {
@@ -75,8 +72,8 @@ class SettingsState extends State<Settings> {
                         },
                       ),
                       buildSettingsCard(
-                        title: "Konum Settingsı",
-                        subtitle: "Konum paylaşımı ve harita Settingsı",
+                        title: "Konum Ayarları",
+                        subtitle: "Konum paylaşımı ve harita ayarları",
                         icon: Icons.location_on,
                         height: 80,
                         onTap: () {
@@ -281,5 +278,3 @@ class SettingsState extends State<Settings> {
     );
   }
 }
-
-

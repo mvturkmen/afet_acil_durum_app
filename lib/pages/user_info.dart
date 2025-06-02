@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'emergency_contact.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserInfoPage extends StatefulWidget {
@@ -11,50 +15,300 @@ class UserInfoPage extends StatefulWidget {
 class _UserInfoPageState extends State<UserInfoPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
-  final TextEditingController _bloodGroupController = TextEditingController();
-  final TextEditingController _emergencyContactController = TextEditingController();
+  final TextEditingController _emergencyNoteController = TextEditingController();
+  final TextEditingController _medicalInfoController = TextEditingController();
+  bool _hasPet = false;
+  String _selectedBloodGroup = '';
+  File? _imageFile;
+
+  final List<String> _bloodGroups = [
+    '',
+    'A+', 'A-',
+    'B+', 'B-',
+    'AB+', 'AB-',
+    '0+', '0-'
+  ];
 
   @override
-  void initState() { // data initializing at the beginning
+  void initState() {
     super.initState();
-    _loadUserData();
+    _loadUserData();  // load saved user data
   }
 
-  Future<void> _loadUserData() async { // data loading
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     _nameController.text = prefs.getString('name') ?? '';
     _surnameController.text = prefs.getString('surname') ?? '';
-    _bloodGroupController.text = prefs.getString('bloodGroup') ?? '';
-    _emergencyContactController.text = prefs.getString('emergencyContact') ?? '';
+    _selectedBloodGroup = prefs.getString('bloodGroup') ?? '';
+    _emergencyNoteController.text = prefs.getString('emergencyNote') ?? '';
+    _medicalInfoController.text = prefs.getString('medicalInfo') ?? '';
+    _hasPet = prefs.getBool('hasPet') ?? false;
+
+    String? imagePath = prefs.getString('profileImagePath');
+    if (imagePath != null && imagePath.isNotEmpty) {
+      setState(() {
+        _imageFile = File(imagePath);  // load saved profile image
+      });
+    }
   }
 
-  Future<void> _saveUserData() async { // data storing
+  Future<void> _saveUserData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('name', _nameController.text);
     await prefs.setString('surname', _surnameController.text);
-    await prefs.setString('bloodGroup', _bloodGroupController.text);
-    await prefs.setString('emergencyContact', _emergencyContactController.text);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bilgiler kaydedildi.")));
+    await prefs.setString('bloodGroup', _selectedBloodGroup);
+    await prefs.setString('emergencyNote', _emergencyNoteController.text);
+    await prefs.setString('medicalInfo', _medicalInfoController.text);
+    await prefs.setBool('hasPet', _hasPet);
+
+    if (_imageFile != null) {
+      await prefs.setString('profileImagePath', _imageFile!.path);  // save image path
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Veriler kaydedildi."),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = pickedImage.name;
+      final savedImage = await File(pickedImage.path).copy('${appDir.path}/$fileName');
+
+      setState(() {
+        _imageFile = savedImage;  // update with new image
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Kullanıcı Bilgileri")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Ad')),
-            TextField(controller: _surnameController, decoration: const InputDecoration(labelText: 'Soyad')),
-            TextField(controller: _bloodGroupController, decoration: const InputDecoration(labelText: 'Kan Grubu')),
-            TextField(controller: _emergencyContactController, decoration: const InputDecoration(labelText: 'Acil Durum Kişisi')),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveUserData,
-              child: const Text('Kaydet'),
-            ),
-          ],
+      backgroundColor: const Color(0xFFF5F7FA),
+      appBar: AppBar(
+        title: const Text(
+          "Acil Durum Bilgileri",
+          style: TextStyle(
+            color: Color(0xFF1F1F1F),
+            fontWeight: FontWeight.w700,
+            fontSize: 25,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 2,
+        iconTheme: const IconThemeData(color: Color(0xFF1F1F1F)),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,  // pick profile image
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.red.shade400, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.red.shade200.withOpacity(0.4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(6),
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.white,
+                      backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
+                      child: _imageFile == null
+                          ? Icon(Icons.camera_alt, size: 60, color: Colors.red.shade400)
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              _buildInputField(_nameController, "Ad"),  // name input
+              const SizedBox(height: 15),
+              _buildInputField(_surnameController, "Soyad"),  // surname input
+              const SizedBox(height: 15),
+              _buildBloodGroupDropdown(),  // blood group dropdown
+              const SizedBox(height: 15),
+              _buildInputField(_emergencyNoteController, "Acil Durum Notu"),  // emergency note
+              const SizedBox(height: 15),
+              _buildInputField(_medicalInfoController, "İlaç / Alerji Bilgisi"),  // medical info
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Evcil Hayvanınız var mı?",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  Switch(
+                    value: _hasPet,
+                    onChanged: (value) {
+                      setState(() {
+                        _hasPet = value;  // toggle pet ownership
+                      });
+                    },
+                    activeColor: Colors.red.shade400,
+                  )
+                ],
+              ),
+              const SizedBox(height: 25),
+              _buildEmergencyContactButton(),  // navigate to emergency contacts
+              const SizedBox(height: 45),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _saveUserData,  // save all user data
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade600,
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    elevation: 6,
+                    shadowColor: Colors.red.shade300.withOpacity(0.7),
+                    textStyle: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  child: const Text(
+                    "Kaydet",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField(TextEditingController controller, String hint) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(
+          color: Color(0xFF1F1F1F),
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Poppins',
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.grey.shade400),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 18),
+        ),
+        minLines: 1,
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+      ),
+    );
+  }
+
+  Widget _buildBloodGroupDropdown() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedBloodGroup.isNotEmpty ? _selectedBloodGroup : null,
+          hint: Text("Kan Grubu", style: TextStyle(color: Colors.grey.shade400)),
+          items: _bloodGroups.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedBloodGroup = newValue ?? '';  // select blood group
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmergencyContactButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const EmergencyContact()),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey.shade800,
+          padding: const EdgeInsets.symmetric(vertical:20, horizontal: 40),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(35),
+          ),
+          elevation: 6,
+          shadowColor: Colors.black.withOpacity(0.15),
+          textStyle: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        child: const Text(
+          'Acil Durum İletişim',
+          style: TextStyle(color: Colors.white),
         ),
       ),
     );
