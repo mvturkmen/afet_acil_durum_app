@@ -6,6 +6,7 @@ import 'package:afet_acil_durum_app/pages/settings.dart';
 import 'package:afet_acil_durum_app/services/notiService.dart';
 import 'package:afet_acil_durum_app/services/location_service.dart';
 import 'package:afet_acil_durum_app/services/connectivity_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -21,26 +22,40 @@ class HomepageState extends State<Homepage> {
   final NotiService _notiService = NotiService();
   final ConnectivityService _connectivityService = ConnectivityService();
 
+  // İlk bağlantı kontrolü tamamlandı mı?
+  bool _initialConnectionCheckCompleted = false;
+  bool _hasMobileConnection = false;
+
   @override
   void initState() {
     super.initState();
     _initializeServices();
+    _connectivityService.baslat();
+  }
+
+  Future<void> _initializeServices() async {
+    // İlk olarak mobil bağlantı kontrolü yap
+    _hasMobileConnection = await checkMobileConnection();
+
+    // Bağlantı servisini başlat
+
+    // İlk kontrol tamamlandı olarak işaretle
+    setState(() {
+      _initialConnectionCheckCompleted = true;
+    });
+
+    // Bildirim servisini başlat
+    await _initializeNotificationService();
+
+    print('Mobil bağlantı durumu: $_hasMobileConnection');
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
-    super.dispose();
-  }
-
-  Future<void> _initializeServices() async {
-    try {
-      await _initializeNotificationService();
-      _connectivityService.baslat();
-      print('Servisler başarıyla başlatıldı');
-    } catch (e) {
-      print('Servisler başlatılırken hata: $e');
+    if (_initialConnectionCheckCompleted) {
+      _connectivityService.kapat();
     }
+    super.dispose();
   }
 
   Future<void> _initializeNotificationService() async {
@@ -124,14 +139,14 @@ class HomepageState extends State<Homepage> {
                 BoxShadow(
                   color: Colors.indigo.shade200.withOpacity(0.3),
                   blurRadius: 4,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.admin_panel_settings,
                   color: Colors.white,
                   size: 18,
@@ -150,103 +165,225 @@ class HomepageState extends State<Homepage> {
           ),
         ),
 
-        StreamBuilder<BaglantiDurumu>(
-          stream: _connectivityService.baglantiStream,
-          initialData: _connectivityService.mevcutDurum,
-          builder: (context, snapshot) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        if (!_initialConnectionCheckCompleted)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Kontrol...',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+        // İlk kontrol tamamlandıysa stream builder kullan
+          StreamBuilder<BaglantiDurumu>(
+            stream: _connectivityService.baglantiStream,
+            initialData: _connectivityService.mevcutDurum,
+            builder: (context, durumSnapshot) {
+              return StreamBuilder<BaglantiTipi>(
+                stream: _connectivityService.baglantiTipiStream,
+                initialData: _connectivityService.mevcutTip,
+                builder: (context, tipSnapshot) {
+                  final durum = durumSnapshot.data ?? BaglantiDurumu.cevrimdisi;
+                  final tip = tipSnapshot.data ?? BaglantiTipi.yok;
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: _connectivityService.baglantiRengi().withOpacity(
+                          0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: _connectivityService.baglantiRengi(),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _connectivityService.baglantiIkonu(),
+                          color: _connectivityService.baglantiRengi(),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _connectivityService.baglantiTipiMetni(),
+                          style: TextStyle(
+                            color: _connectivityService.baglantiRengi(),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget buildConnectivityCard() {
+    if (!_initialConnectionCheckCompleted) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.grey.shade100,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Bağlantı Durumu',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Kontrol ediliyor...',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return StreamBuilder<BaglantiDurumu>(
+      stream: _connectivityService.baglantiStream,
+      initialData: _connectivityService.mevcutDurum,
+      builder: (context, durumSnapshot) {
+        return StreamBuilder<BaglantiTipi>(
+          stream: _connectivityService.baglantiTipiStream,
+          initialData: _connectivityService.mevcutTip,
+          builder: (context, tipSnapshot) {
+            final durum = durumSnapshot.data ?? BaglantiDurumu.cevrimdisi;
+            final tip = tipSnapshot.data ?? BaglantiTipi.yok;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
                 color: _connectivityService.baglantiRengi().withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: _connectivityService.baglantiRengi(),
-                  width: 1.5,
+                  color: _connectivityService.baglantiRengi().withOpacity(0.3),
+                  width: 1,
                 ),
               ),
+              padding: const EdgeInsets.all(12),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    _connectivityService.baglantiIkonu(),
-                    color: _connectivityService.baglantiRengi(),
-                    size: 18,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    _connectivityService.baglantiTipiMetni(),
-                    style: TextStyle(
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: _connectivityService.baglantiRengi().withOpacity(
+                          0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      _connectivityService.baglantiIkonu(),
                       color: _connectivityService.baglantiRengi(),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Bağlantı Durumu',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _connectivityService.baglantiDurumuMetni(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _connectivityService.baglantiRengi(),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          'Tip: ${_connectivityService.baglantiTipiMetni()}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[500],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: _connectivityService.baglantiRengi(),
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ],
               ),
             );
           },
-        ),
-      ],
-    );
-  }
-
-  Widget buildConnectivityCard() {
-    return StreamBuilder<BaglantiDurumu>(
-      stream: _connectivityService.baglantiStream,
-      initialData: _connectivityService.mevcutDurum,
-      builder: (context, snapshot) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: _connectivityService.baglantiRengi().withOpacity(0.1),
-            border: Border.all(
-              color: _connectivityService.baglantiRengi().withOpacity(0.3),
-              width: 1,
-            ),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: _connectivityService.baglantiRengi().withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  _connectivityService.baglantiIkonu(),
-                  color: _connectivityService.baglantiRengi(),
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Bağlantı Durumu',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${_connectivityService.baglantiDurumuMetni()} - ${_connectivityService.baglantiTipiMetni()}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: _connectivityService.baglantiRengi(),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         );
       },
     );
@@ -320,15 +457,18 @@ class HomepageState extends State<Homepage> {
       onTap: () async {
         MyPosition? position = await LocationService().getCurrentLocation();
         if (position != null) {
-          String address = await LocationService().getAddressFromPosition(position);
+          String address = await LocationService().getAddressFromPosition(
+              position);
           showDialog(
             context: context,
-            builder: (_) => AlertDialog(
-              title: Text('Konum Bilgisi'),
-              content: Text(
-                '📍 Enlem: ${position.latitude}, Boylam: ${position.longitude}\n\n📫 Adres: $address',
-              ),
-            ),
+            builder: (_) =>
+                AlertDialog(
+                  title: Text('Konum Bilgisi'),
+                  content: Text(
+                    '📍 Enlem: ${position.latitude}, Boylam: ${position
+                        .longitude}\n\n📫 Adres: $address',
+                  ),
+                ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -500,7 +640,6 @@ class HomepageState extends State<Homepage> {
     );
   }
 
-
   Widget buildBottomNavigationBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -522,24 +661,34 @@ class HomepageState extends State<Homepage> {
           children: [
             navIcon(
               icon: Icons.settings,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Settings())),
+              onTap: () =>
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => Settings())),
             ),
             navIcon(
               icon: Icons.people,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+              onTap: () =>
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => EmergencyContact())),
             ),
             navIcon(
               icon: Icons.home,
               isActive: true,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+              onTap: () =>
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => Homepage())),
             ),
             navIcon(
               icon: Icons.notifications,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificaitonPage())),
+              onTap: () =>
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => NotificaitonPage())),
             ),
             navIcon(
               icon: Icons.map,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+              onTap: () =>
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => MapArea())),
             ),
           ],
         ),
@@ -547,7 +696,8 @@ class HomepageState extends State<Homepage> {
     );
   }
 
-  Widget navIcon({required IconData icon, required VoidCallback onTap, bool isActive = false}) {
+  Widget navIcon(
+      {required IconData icon, required VoidCallback onTap, bool isActive = false}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -566,7 +716,6 @@ class HomepageState extends State<Homepage> {
       ),
     );
   }
-
 
   void _showAuthorityLoginPopup() {
     showDialog(
@@ -628,14 +777,16 @@ class HomepageState extends State<Homepage> {
                 TextField(
                   decoration: InputDecoration(
                     labelText: "Kullanıcı Adı",
-                    prefixIcon: Icon(Icons.person, color: Colors.indigo.shade600),
+                    prefixIcon: Icon(
+                        Icons.person, color: Colors.indigo.shade600),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey.shade300),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.indigo.shade600, width: 2),
+                      borderSide: BorderSide(
+                          color: Colors.indigo.shade600, width: 2),
                     ),
                     filled: true,
                     fillColor: Colors.grey.shade50,
@@ -653,7 +804,8 @@ class HomepageState extends State<Homepage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.indigo.shade600, width: 2),
+                      borderSide: BorderSide(
+                          color: Colors.indigo.shade600, width: 2),
                     ),
                     filled: true,
                     fillColor: Colors.grey.shade50,
@@ -676,7 +828,8 @@ class HomepageState extends State<Homepage> {
                         ),
                         child: Text(
                           "İptal",
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                          style: TextStyle(color: Colors.grey.shade600,
+                              fontSize: 16),
                         ),
                       ),
                     ),
@@ -704,7 +857,8 @@ class HomepageState extends State<Homepage> {
                         ),
                         child: Text(
                           "Giriş Yap",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -719,7 +873,9 @@ class HomepageState extends State<Homepage> {
   }
 
   Future<void> _sendEmergencyNotification() async {
-    bool hasConnection = await _connectivityService.acilDurumBaglantisiVar();
+    bool hasConnection = _initialConnectionCheckCompleted
+        ? await _connectivityService.acilDurumBaglantisiVar()
+        : _hasMobileConnection;
 
     if (!_notiService.isInitialized) {
       await _initializeNotificationService();
@@ -742,7 +898,9 @@ class HomepageState extends State<Homepage> {
   }
 
   Future<void> _sendLocationNotification() async {
-    bool hasConnection = await _connectivityService.acilDurumBaglantisiVar();
+    bool hasConnection = _initialConnectionCheckCompleted
+        ? await _connectivityService.acilDurumBaglantisiVar()
+        : _hasMobileConnection;
 
     if (!_notiService.isInitialized) {
       await _initializeNotificationService();
@@ -758,6 +916,9 @@ class HomepageState extends State<Homepage> {
       body: body,
     );
   }
+
+
+
 
   Future<void> _sendFlashlightNotification() async {
     if (!_notiService.isInitialized) {
@@ -798,4 +959,27 @@ class HomepageState extends State<Homepage> {
   void _saveOfflineEmergencyRequest() {
     print('Offline acil durum kaydı yapıldı');
   }
+
+  Future<bool> checkMobileConnection() async {
+    try {
+      // Bağlantı tipi mobil veri mi?
+      if (ConnectivityService().mevcutTip == BaglantiTipi.mobilVeri) {
+        // Çevrimiçi ya da sınırlı bağlantı varsa mobil veri var sayılır
+        if (ConnectivityService().mevcutDurum == BaglantiDurumu.cevrimici ||
+            ConnectivityService().mevcutDurum == BaglantiDurumu.sinirli) {
+          return true;
+        }
+
+        // Anlık durumu tekrar kontrol et (internet erişimi var mı?)
+        final internetVarMi = await ConnectivityService().acilDurumBaglantisiVar();
+        return internetVarMi;
+      }
+
+      return false; // Mobil veri değilse
+    } catch (e) {
+      print('Mobil bağlantı kontrol hatası: $e');
+      return false;
+    }
+  }
+
 }
