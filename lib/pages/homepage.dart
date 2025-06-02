@@ -3,7 +3,9 @@ import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/pages/notification_page.dart';
 import 'package:afet_acil_durum_app/pages/settings.dart';
+import 'package:afet_acil_durum_app/service/notiService.dart';
 import 'package:afet_acil_durum_app/services/location_service.dart';
+
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -15,6 +17,25 @@ class Homepage extends StatefulWidget {
 class HomepageState extends State<Homepage> {
   String textField1 = '';
   String textField2 = '';
+
+  // Bildirim servisi instance'ı
+  final NotiService _notiService = NotiService();
+
+  @override
+  void initState() {
+    super.initState();
+    // Sayfa açılırken bildirim servisini başlat
+    _initializeNotificationService();
+  }
+
+  Future<void> _initializeNotificationService() async {
+    try {
+      await _notiService.initNotification();
+      print('Bildirim servisi başarıyla başlatıldı');
+    } catch (e) {
+      print('Bildirim servisi başlatılırken hata: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +75,16 @@ class HomepageState extends State<Homepage> {
 
   Widget buildEmergencyCard() {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        // Bildirim gönder
+        await _sendEmergencyNotification();
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hızlı Yardım butonuna tıklandı!')),
+          SnackBar(
+            content: Text('Acil durum bildirimi gönderildi!'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
         );
       },
       child: Container(
@@ -111,6 +139,7 @@ class HomepageState extends State<Homepage> {
   Widget buildLocationCard() {
     return GestureDetector(
       onTap: () async {
+
         MyPosition? position = await LocationService().getCurrentLocation();
         if (position != null) {
           String address = await LocationService().getAddressFromPosition(position);
@@ -129,6 +158,7 @@ class HomepageState extends State<Homepage> {
             SnackBar(content: Text("Konum alınamadı.")),
           );
         }
+
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 24),
@@ -196,9 +226,15 @@ class HomepageState extends State<Homepage> {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: () {
+            onTap: () async {
+              // El feneri bildirimi gönder
+              await _sendFlashlightNotification();
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('El Feneri butonuna tıklandı!')),
+                SnackBar(
+                  content: Text('El feneri bildirimi gönderildi!'),
+                  duration: Duration(seconds: 2),
+                ),
               );
             },
             child: Container(
@@ -227,9 +263,15 @@ class HomepageState extends State<Homepage> {
         ),
         Expanded(
           child: GestureDetector(
-            onTap: () {
+            onTap: () async {
+              // Düdük bildirimi gönder
+              await _sendWhistleNotification();
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Düdük butonuna tıklandı!')),
+                SnackBar(
+                  content: Text('Düdük bildirimi gönderildi!'),
+                  duration: Duration(seconds: 2),
+                ),
               );
             },
             child: Container(
@@ -262,24 +304,38 @@ class HomepageState extends State<Homepage> {
 
   Widget buildBigBell() {
     return Center(
-      child: Container(
-        width: 90,
-        height: 90,
-        decoration: BoxDecoration(
-          color: Colors.red.shade700,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.red.shade300.withOpacity(0.7),
-              blurRadius: 12,
-              offset: Offset(0, 6),
+      child: GestureDetector(
+        onTap: () async {
+          // Genel alarm bildirimi gönder
+          await _sendAlarmNotification();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Alarm bildirimi gönderildi!'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 2),
             ),
-          ],
-        ),
-        child: Icon(
-          Icons.notifications_active,
-          color: Colors.white,
-          size: 48,
+          );
+        },
+        child: Container(
+          width: 90,
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.red.shade700,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.shade300.withOpacity(0.7),
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.notifications_active,
+            color: Colors.white,
+            size: 48,
+          ),
         ),
       ),
     );
@@ -329,4 +385,66 @@ class HomepageState extends State<Homepage> {
       child: Icon(icon, color: Colors.white, size: 32),
     );
   }
+
+  // Bildirim gönderme metodları
+  Future<void> _sendEmergencyNotification() async {
+    if (!_notiService.isInitialized) {
+      await _initializeNotificationService();
+    }
+
+    await _notiService.showNotification(
+      id: 1,
+      title: '🚨 ACİL DURUM!',
+      body: 'Acil yardım talebi gönderildi. En yakın yardım ekipleri bilgilendirildi.',
+    );
+  }
+
+  Future<void> _sendLocationNotification() async {
+    if (!_notiService.isInitialized) {
+      await _initializeNotificationService();
+    }
+
+    await _notiService.showNotification(
+      id: 2,
+      title: '📍 Konum Paylaşıldı',
+      body: 'Konumunuz acil durum ekipleriyle paylaşıldı.',
+    );
+  }
+
+  Future<void> _sendFlashlightNotification() async {
+    if (!_notiService.isInitialized) {
+      await _initializeNotificationService();
+    }
+
+    await _notiService.showNotification(
+      id: 3,
+      title: '🔦 El Feneri',
+      body: 'El feneri özelliği aktif edildi.',
+    );
+  }
+
+  Future<void> _sendWhistleNotification() async {
+    if (!_notiService.isInitialized) {
+      await _initializeNotificationService();
+    }
+
+    await _notiService.showNotification(
+      id: 4,
+      title: '📢 Düdük Sesi',
+      body: 'Acil durum düdük sesi çalınıyor.',
+    );
+  }
+
+  Future<void> _sendAlarmNotification() async {
+    if (!_notiService.isInitialized) {
+      await _initializeNotificationService();
+    }
+
+    await _notiService.showNotification(
+      id: 5,
+      title: '🔔 ALARM!',
+      body: 'Genel alarm sistemi aktif edildi.',
+    );
+  }
+
 }
