@@ -34,10 +34,10 @@ dependencies:
   path_provider: ^2.0.13
   path: ^1.8.3
   shared_preferences: ^2.2.2
-
+  connectivity_plus: ^6.0.5
+  http: ^1.1.0
   protobuf: ^2.0.0
   flutter_local_notifications: ^17.0.0
-
   geolocator: ^11.0.0
   geocoding: ^2.0.5
   google_maps_flutter: ^2.5.0
