@@ -4,6 +4,7 @@ import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/pages/notification_page.dart';
 import 'package:afet_acil_durum_app/pages/settings.dart';
+import 'package:afet_acil_durum_app/services/connectivity_service.dart';
 
 class NotificaitonPage extends StatefulWidget {
   const NotificaitonPage({super.key});
@@ -51,44 +52,109 @@ class NotificaitonPageState extends State<NotificaitonPage> {
     },
   ];
 
+  final ConnectivityService _connectivityService = ConnectivityService();
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivityService.baslat();
+  }
+
+  @override
+  void dispose() {
+    _connectivityService.kapat();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 60),
-              Text(
-                "BİLDİRİMLER",
-                style: TextStyle(
-                  color: Colors.grey[800],
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
+        child: Column(
+          children: [
+            // Sabit header
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: buildHeader(),
+            ),
+
+            // Kaydırılabilir içerik
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      "BİLDİRİMLER",
+                      style: TextStyle(
+                        color: Colors.grey[800],
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    buildNotificationContainer(),
+                    const SizedBox(height: 32),
+                    buildBigBell(context),
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
-              const SizedBox(height: 40),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      buildNotificationContainer(),
-                      const SizedBox(height: 24),
-                      buildBigBell(),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              buildBottomNavigationBar(context),
-            ],
-          ),
+            ),
+
+            // Sabit alt navigasyon
+            buildBottomNavigationBar(context),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget buildHeader() {
+    return StreamBuilder<BaglantiDurumu>(
+      stream: _connectivityService.baglantiStream,
+      initialData: _connectivityService.mevcutDurum,
+      builder: (context, snapshot) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: _connectivityService.baglantiRengi().withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _connectivityService.baglantiRengi(),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _connectivityService.baglantiIkonu(),
+                    color: _connectivityService.baglantiRengi(),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    _connectivityService.baglantiTipiMetni(),
+                    style: TextStyle(
+                      color: _connectivityService.baglantiRengi(),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -277,81 +343,84 @@ class NotificaitonPageState extends State<NotificaitonPage> {
     );
   }
 
-
-
-  Widget buildBigBell() {
+  Widget buildBigBell(BuildContext context) {
     return Center(
       child: GestureDetector(
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Acil durum alarmı aktifleştirildi!')),
+            SnackBar(
+              content: Text('Acil durum alarmı aktifleştirildi!'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 2),
+            ),
           );
         },
         child: Container(
-          width: 90,
-          height: 90,
+          width: 80,
+          height: 80,
           decoration: BoxDecoration(
             color: Colors.red.shade700,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
                 color: Colors.red.shade300.withOpacity(0.7),
-                blurRadius: 12,
-                offset: Offset(0, 6),
+                blurRadius: 10,
+                offset: Offset(0, 4),
               ),
             ],
           ),
           child: Icon(
             Icons.notifications_active,
             color: Colors.white,
-            size: 48,
+            size: 40,
           ),
         ),
       ),
     );
   }
 
-
   Widget buildBottomNavigationBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.blueGrey.shade700,
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 6,
-            offset: Offset(0, 4),
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
         ],
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          navIcon(
-            icon: Icons.settings,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Settings())),
-          ),
-          navIcon(
-            icon: Icons.people,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
-          ),
-          navIcon(
-            icon: Icons.home,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
-          ),
-
-          navIcon(
-            icon: Icons.notifications,
-            isActive: true,
-            onTap: () {}, // Zaten bu sayfadayız
-          ),
-          navIcon(
-            icon: Icons.map,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
-          ),
-        ],
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            navIcon(
+              icon: Icons.settings,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Settings())),
+            ),
+            navIcon(
+              icon: Icons.people,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+            ),
+            navIcon(
+              icon: Icons.home,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+            ),
+            navIcon(
+              icon: Icons.notifications,
+              isActive: true,
+              onTap: () {},
+            ),
+            navIcon(
+              icon: Icons.map,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -360,15 +429,17 @@ class NotificaitonPageState extends State<NotificaitonPage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: isActive ? BoxDecoration(
+        padding: const EdgeInsets.all(6),
+        decoration: isActive
+            ? BoxDecoration(
           color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-        ) : null,
+          borderRadius: BorderRadius.circular(10),
+        )
+            : null,
         child: Icon(
-            icon,
-            color: isActive ? Colors.white : Colors.white70,
-            size: 32
+          icon,
+          color: isActive ? Colors.white : Colors.white70,
+          size: 28,
         ),
       ),
     );

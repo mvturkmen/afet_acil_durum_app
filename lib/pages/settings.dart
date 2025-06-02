@@ -4,6 +4,7 @@ import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/pages/notification_page.dart';
 import 'package:afet_acil_durum_app/pages/user_info.dart';
+import 'package:afet_acil_durum_app/services/connectivity_service.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -12,36 +13,62 @@ class Settings extends StatefulWidget {
 }
 
 class SettingsState extends State<Settings> {
+  final ConnectivityService _connectivityService = ConnectivityService();
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivityService.baslat();
+  }
+
+  @override
+  void dispose() {
+    _connectivityService.kapat();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final availableHeight = screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 60),
-              Text(
+        child: Column(
+          children: [
+            // Header with connectivity status
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: buildHeader(),
+            ),
+
+            // Başlık
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+              child: Text(
                 "AYARLAR",
                 style: TextStyle(
                   color: Colors.grey[800],
-                  fontSize: 34,
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.2,
                 ),
               ),
-              const SizedBox(height: 40),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      buildSettingsCard(
+            ),
+
+            // Ana içerik alanı - Flex ile eşit dağıtım
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    // Settings kartları - Her biri eşit alan kaplar
+                    Expanded(
+                      child: buildSettingsCard(
                         title: "Acil Durum Bilgileri",
                         subtitle: "Acil durumda lazım olacak bilgiler.",
                         icon: Icons.person,
-                        height: 80,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -49,62 +76,119 @@ class SettingsState extends State<Settings> {
                           );
                         },
                       ),
-                      buildSettingsCard(
+                    ),
+
+                    Expanded(
+                      child: buildSettingsCard(
                         title: "Bildirim Ayarları",
                         subtitle: "Bildirim tercihleri",
                         icon: Icons.notifications,
-                        height: 80,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Bildirim Ayarlarıı seçildi!')),
+                            SnackBar(content: Text('Bildirim Ayarları seçildi!')),
                           );
                         },
                       ),
-                      buildSettingsCard(
+                    ),
+
+                    Expanded(
+                      child: buildSettingsCard(
                         title: "Gizlilik",
                         subtitle: "Gizlilik ve güvenlik ayarları",
                         icon: Icons.privacy_tip,
-                        height: 80,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Gizlilik seçildi!')),
                           );
                         },
                       ),
-                      buildSettingsCard(
+                    ),
+
+                    Expanded(
+                      child: buildSettingsCard(
                         title: "Konum Ayarları",
                         subtitle: "Konum paylaşımı ve harita ayarları",
                         icon: Icons.location_on,
-                        height: 80,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Konum Settingsı seçildi!')),
+                            SnackBar(content: Text('Konum Ayarları seçildi!')),
                           );
                         },
                       ),
-                      buildSettingsCard(
+                    ),
+
+                    Expanded(
+                      child: buildSettingsCard(
                         title: "Uygulama Ayarları",
                         subtitle: "Genel uygulama tercihleri",
                         icon: Icons.settings,
-                        height: 80,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Uygulama Ayarları seçildi!')),
                           );
                         },
                       ),
-                      const SizedBox(height: 40),
-                      buildBigBell(),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              buildBottomNavigationBar(context),
-            ],
-          ),
+            ),
+
+            // Acil durum butonu - Sabit alan
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: buildBigBell(),
+            ),
+
+            // Alt navigasyon - Sabit alan
+            buildBottomNavigationBar(context),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget buildHeader() {
+    return StreamBuilder<BaglantiDurumu>(
+      stream: _connectivityService.baglantiStream,
+      initialData: _connectivityService.mevcutDurum,
+      builder: (context, snapshot) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: _connectivityService.baglantiRengi().withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _connectivityService.baglantiRengi(),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _connectivityService.baglantiIkonu(),
+                    color: _connectivityService.baglantiRengi(),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    _connectivityService.baglantiTipiMetni(),
+                    style: TextStyle(
+                      color: _connectivityService.baglantiRengi(),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -112,104 +196,107 @@ class SettingsState extends State<Settings> {
     required String title,
     required String subtitle,
     required IconData icon,
-    required double height,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           color: Colors.blueGrey.shade300,
           boxShadow: [
             BoxShadow(
               color: Colors.blueGrey.shade100.withOpacity(0.5),
-              blurRadius: 8,
-              offset: Offset(0, 4),
+              blurRadius: 6,
+              offset: Offset(0, 2),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(20),
-        height: height,
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
-                shape: BoxShape.circle,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 22,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white70,
-              size: 16,
-            ),
-          ],
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white70,
+                size: 14,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget buildBigBell() {
-    return Center(
-      child: GestureDetector(
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Acil durum alarmı aktifleştirildi!')),
-          );
-        },
-        child: Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: Colors.red.shade700,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.red.shade300.withOpacity(0.7),
-                blurRadius: 12,
-                offset: Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.notifications_active,
-            color: Colors.white,
-            size: 48,
-          ),
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Acil durum alarmı aktifleştirildi!')),
+        );
+      },
+      child: Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          color: Colors.red.shade700,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.red.shade300.withOpacity(0.7),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Icon(
+          Icons.notifications_active,
+          color: Colors.white,
+          size: 35,
         ),
       ),
     );
@@ -217,43 +304,46 @@ class SettingsState extends State<Settings> {
 
   Widget buildBottomNavigationBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.blueGrey.shade700,
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 6,
-            offset: Offset(0, 4),
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
         ],
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          navIcon(
-            icon: Icons.settings,
-            isActive: true,
-            onTap: () {}, // Zaten bu sayfadayız
-          ),
-          navIcon(
-            icon: Icons.people,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
-          ),
-          navIcon(
-            icon: Icons.home,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
-          ),
-          navIcon(
-            icon: Icons.notifications,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificaitonPage())),
-          ),
-          navIcon(
-            icon: Icons.map,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
-          ),
-        ],
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            navIcon(
+              icon: Icons.settings,
+              isActive: true,
+              onTap: () {},
+            ),
+            navIcon(
+              icon: Icons.people,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+            ),
+            navIcon(
+              icon: Icons.home,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+            ),
+            navIcon(
+              icon: Icons.notifications,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificaitonPage())),
+            ),
+            navIcon(
+              icon: Icons.map,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -262,17 +352,17 @@ class SettingsState extends State<Settings> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(6),
         decoration: isActive
             ? BoxDecoration(
           color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         )
             : null,
         child: Icon(
           icon,
           color: isActive ? Colors.white : Colors.white70,
-          size: 32,
+          size: 28,
         ),
       ),
     );
