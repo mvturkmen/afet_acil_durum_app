@@ -1,11 +1,9 @@
 import 'dart:io';
-
+import 'emergency_contact.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'acilKisiler.dart';
 
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -204,7 +202,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Acil_kisiler()),
+            MaterialPageRoute(builder: (context) => const EmergencyContact()),
           );
         },
         style: ElevatedButton.styleFrom(

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
 import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notificaiton_page.dart';
-import 'package:afet_acil_durum_app/pages/user_info.dart';
+import 'package:afet_acil_durum_app/pages/notification_page.dart';
 import 'package:afet_acil_durum_app/pages/settings.dart';
 
 class NotificaitonPage extends StatefulWidget {
