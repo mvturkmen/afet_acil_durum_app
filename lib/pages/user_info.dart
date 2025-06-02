@@ -289,7 +289,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const EmergencyContact()),
+            MaterialPageRoute(builder: (context) =>  EmergencyContact()),
           );
         },
         style: ElevatedButton.styleFrom(
