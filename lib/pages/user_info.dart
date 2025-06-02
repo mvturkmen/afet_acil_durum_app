@@ -15,43 +15,59 @@ class UserInfoPage extends StatefulWidget {
 class _UserInfoPageState extends State<UserInfoPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
-  final TextEditingController _bloodGroupController = TextEditingController();
-
+  final TextEditingController _emergencyNoteController = TextEditingController();
+  final TextEditingController _medicalInfoController = TextEditingController();
+  bool _hasPet = false;
+  String _selectedBloodGroup = '';
   File? _imageFile;
+
+  final List<String> _bloodGroups = [
+    '',
+    'A+', 'A-',
+    'B+', 'B-',
+    'AB+', 'AB-',
+    '0+', '0-'
+  ];
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();  // load previously saved user data from shared preferences on app start
+    _loadUserData();  // load saved user data
   }
 
   Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance(); // get shared preferences instance
-    _nameController.text = prefs.getString('name') ?? '';  // load saved name or set empty string
-    _surnameController.text = prefs.getString('surname') ?? '';  // load saved surname or empty
-    _bloodGroupController.text = prefs.getString('bloodGroup') ?? '';  // load saved blood group or empty
+    final prefs = await SharedPreferences.getInstance();
+    _nameController.text = prefs.getString('name') ?? '';
+    _surnameController.text = prefs.getString('surname') ?? '';
+    _selectedBloodGroup = prefs.getString('bloodGroup') ?? '';
+    _emergencyNoteController.text = prefs.getString('emergencyNote') ?? '';
+    _medicalInfoController.text = prefs.getString('medicalInfo') ?? '';
+    _hasPet = prefs.getBool('hasPet') ?? false;
 
-    String? imagePath = prefs.getString('profileImagePath');  // load saved profile image path
+    String? imagePath = prefs.getString('profileImagePath');
     if (imagePath != null && imagePath.isNotEmpty) {
       setState(() {
-        _imageFile = File(imagePath);  // set image file if path exists
+        _imageFile = File(imagePath);  // load saved profile image
       });
     }
   }
 
   Future<void> _saveUserData() async {
-    final prefs = await SharedPreferences.getInstance(); // get shared preferences instance
-    await prefs.setString('name', _nameController.text);  // save name to shared preferences
-    await prefs.setString('surname', _surnameController.text);  // save surname
-    await prefs.setString('bloodGroup', _bloodGroupController.text);  // save blood group
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', _nameController.text);
+    await prefs.setString('surname', _surnameController.text);
+    await prefs.setString('bloodGroup', _selectedBloodGroup);
+    await prefs.setString('emergencyNote', _emergencyNoteController.text);
+    await prefs.setString('medicalInfo', _medicalInfoController.text);
+    await prefs.setBool('hasPet', _hasPet);
 
     if (_imageFile != null) {
-      await prefs.setString('profileImagePath', _imageFile!.path);  // save profile image path if selected
+      await prefs.setString('profileImagePath', _imageFile!.path);  // save image path
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Veriler kaydedildi."),  // show confirmation message after saving
+        content: Text("Veriler kaydedildi."),
         duration: Duration(seconds: 1),
       ),
     );
@@ -67,7 +83,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
       final savedImage = await File(pickedImage.path).copy('${appDir.path}/$fileName');
 
       setState(() {
-        _imageFile = savedImage;
+        _imageFile = savedImage;  // update with new image
       });
     }
   }
@@ -78,11 +94,11 @@ class _UserInfoPageState extends State<UserInfoPage> {
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: const Text(
-          "Kullanıcı Bilgileri",
+          "Acil Durum Bilgileri",
           style: TextStyle(
             color: Color(0xFF1F1F1F),
             fontWeight: FontWeight.w700,
-            fontSize: 26,
+            fontSize: 25,
             fontFamily: 'Poppins',
           ),
         ),
@@ -93,13 +109,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: GestureDetector(
-                  onTap: _pickImage,
+                  onTap: _pickImage,  // pick profile image
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -118,27 +134,54 @@ class _UserInfoPageState extends State<UserInfoPage> {
                       backgroundColor: Colors.white,
                       backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
                       child: _imageFile == null
-                          ? Icon(Icons.camera_alt, size: 50, color: Colors.red.shade400)
+                          ? Icon(Icons.camera_alt, size: 60, color: Colors.red.shade400)
                           : null,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
-              _buildInputField(_nameController, "Ad"),
-              const SizedBox(height: 20),
-              _buildInputField(_surnameController, "Soyad"),
-              const SizedBox(height: 20),
-              _buildInputField(_bloodGroupController, "Kan Grubu"),
+              const SizedBox(height: 15),
+              _buildInputField(_nameController, "Ad"),  // name input
+              const SizedBox(height: 15),
+              _buildInputField(_surnameController, "Soyad"),  // surname input
+              const SizedBox(height: 15),
+              _buildBloodGroupDropdown(),  // blood group dropdown
+              const SizedBox(height: 15),
+              _buildInputField(_emergencyNoteController, "Acil Durum Notu"),  // emergency note
+              const SizedBox(height: 15),
+              _buildInputField(_medicalInfoController, "İlaç / Alerji Bilgisi"),  // medical info
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Evcil Hayvanınız var mı?",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  Switch(
+                    value: _hasPet,
+                    onChanged: (value) {
+                      setState(() {
+                        _hasPet = value;  // toggle pet ownership
+                      });
+                    },
+                    activeColor: Colors.red.shade400,
+                  )
+                ],
+              ),
               const SizedBox(height: 25),
-              _buildEmergencyContactButton(),
+              _buildEmergencyContactButton(),  // navigate to emergency contacts
               const SizedBox(height: 45),
               Center(
                 child: ElevatedButton(
-                  onPressed: _saveUserData,
+                  onPressed: _saveUserData,  // save all user data
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red.shade600,
-                    padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 18),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
                     ),
@@ -176,12 +219,12 @@ class _UserInfoPageState extends State<UserInfoPage> {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 25),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: controller,
         style: const TextStyle(
           color: Color(0xFF1F1F1F),
-          fontSize: 22,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Poppins',
         ),
@@ -190,6 +233,50 @@ class _UserInfoPageState extends State<UserInfoPage> {
           hintStyle: TextStyle(color: Colors.grey.shade400),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 18),
+        ),
+        minLines: 1,
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+      ),
+    );
+  }
+
+  Widget _buildBloodGroupDropdown() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedBloodGroup.isNotEmpty ? _selectedBloodGroup : null,
+          hint: Text("Kan Grubu", style: TextStyle(color: Colors.grey.shade400)),
+          items: _bloodGroups.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedBloodGroup = newValue ?? '';  // select blood group
+            });
+          },
         ),
       ),
     );
@@ -207,7 +294,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.grey.shade800,
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+          padding: const EdgeInsets.symmetric(vertical:20, horizontal: 40),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(35),
           ),
@@ -220,7 +307,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
           ),
         ),
         child: const Text(
-          'Acil Durum İletişim Kişileri',
+          'Acil Durum İletişim',
           style: TextStyle(color: Colors.white),
         ),
       ),
