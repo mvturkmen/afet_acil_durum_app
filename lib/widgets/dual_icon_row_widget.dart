@@ -1,10 +1,12 @@
 
+import 'package:afet_acil_durum_app/services/torch_service.dart';
 import 'package:flutter/material.dart';
 import 'package:afet_acil_durum_app/services/sound_service.dart';
 import '../services/notifications/show_notification.dart';
 
 class DualIconRowWidget extends StatelessWidget {
   bool isTorchOn = false;
+  final TorchService _torchService = TorchService();
 
   DualIconRowWidget({Key? key}) : super(key: key);
 
@@ -20,7 +22,16 @@ class DualIconRowWidget extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: () async {
-                await _showNotification.sendFlashlightNotification(isTorchOn);
+                if(isTorchOn){
+                  _torchService.turnOffTorch(context);
+                  await _showNotification.sendFlashlightNotification(isTorchOn);
+                  isTorchOn = false;
+                } else {
+                  _torchService.turnOnTorch(context);
+                  await _showNotification.sendFlashlightNotification(isTorchOn);
+                  isTorchOn = true;
+                }
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('El feneri bildirimi gönderildi!'),

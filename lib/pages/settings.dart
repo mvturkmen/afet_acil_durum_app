@@ -1,3 +1,4 @@
+import 'package:afet_acil_durum_app/services/speechText_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/user_info.dart';
@@ -17,11 +18,15 @@ class Settings extends StatefulWidget {
 
 class SettingsState extends State<Settings> {
   final ConnectivityService _connectivityService = ConnectivityService();
+  final SpeechService _speechService = SpeechService();
+  String text = 'Bir şey söyleyin...';
+  double _confidence = 1.0;
 
   @override
   void initState() {
     super.initState();
     _connectivityService.baslat();
+    _initSpeech();
   }
 
   @override
@@ -29,6 +34,18 @@ class SettingsState extends State<Settings> {
     _connectivityService.kapat();
     super.dispose();
   }
+
+  void _initSpeech() async {
+    bool available = await _speechService.initSpeech();
+    if (!available) {
+      setState(() {
+        text = 'Konuşma tanıma kullanılamıyor.';
+      });
+    }
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +90,7 @@ class SettingsState extends State<Settings> {
                             MaterialPageRoute(builder: (context) => UserInfo()),
                           );
                         },
+                        onDoubleTap: () {} ,
                         isDarkMode: themeController.isDarkMode,
                       ),
                     ),
@@ -86,19 +104,28 @@ class SettingsState extends State<Settings> {
                             const SnackBar(content: Text('Bildirim Ayarları seçildi!')),
                           );
                         },
+                        onDoubleTap: () {} ,
                         isDarkMode: themeController.isDarkMode,
                       ),
                     ),
                     Expanded(
                       child: buildSettingsCard(
-                        title: "Gizlilik",
+                        title: text,
                         subtitle: "Gizlilik ve güvenlik ayarları",
                         icon: Icons.privacy_tip,
-                        onTap: () {
+                        onTap: () async {
+                          String newText = await _speechService.startListening();
+                          setState(() {
+                            text = newText;
+                          });
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Gizlilik seçildi!')),
                           );
                         },
+                        onDoubleTap: () {
+                          _speechService.stopListening();
+                        } ,
                         isDarkMode: themeController.isDarkMode,
                       ),
                     ),
@@ -112,6 +139,7 @@ class SettingsState extends State<Settings> {
                             const SnackBar(content: Text('Konum Ayarları seçildi!')),
                           );
                         },
+                        onDoubleTap: () {} ,
                         isDarkMode: themeController.isDarkMode,
                       ),
                     ),
@@ -126,6 +154,7 @@ class SettingsState extends State<Settings> {
                             MaterialPageRoute(builder: (context) => const AppSettings()),
                           );
                         },
+                        onDoubleTap: () {} ,
                         isDarkMode: themeController.isDarkMode,
                       ),
                     ),
@@ -194,6 +223,7 @@ class SettingsState extends State<Settings> {
     required IconData icon,
     required VoidCallback onTap,
     required bool isDarkMode,
+    required VoidCallback onDoubleTap,
   }) {
     return GestureDetector(
       onTap: onTap,
