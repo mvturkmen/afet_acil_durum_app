@@ -1,18 +1,20 @@
 import 'dart:io';
-import 'emergency_contact.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'emergency_contact.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
-class UserInfoPage extends StatefulWidget {
-  const UserInfoPage({super.key});
+class UserInfo extends StatefulWidget {
+  const UserInfo({super.key});
 
   @override
-  State<UserInfoPage> createState() => _UserInfoPageState();
+  State<UserInfo> createState() => _UserInfoState();
 }
 
-class _UserInfoPageState extends State<UserInfoPage> {
+class _UserInfoState extends State<UserInfo> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _emergencyNoteController = TextEditingController();
@@ -32,7 +34,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();  // load saved user data
+    _loadUserData();
   }
 
   Future<void> _loadUserData() async {
@@ -47,7 +49,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
     String? imagePath = prefs.getString('profileImagePath');
     if (imagePath != null && imagePath.isNotEmpty) {
       setState(() {
-        _imageFile = File(imagePath);  // load saved profile image
+        _imageFile = File(imagePath);
       });
     }
   }
@@ -62,7 +64,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
     await prefs.setBool('hasPet', _hasPet);
 
     if (_imageFile != null) {
-      await prefs.setString('profileImagePath', _imageFile!.path);  // save image path
+      await prefs.setString('profileImagePath', _imageFile!.path);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -83,28 +85,37 @@ class _UserInfoPageState extends State<UserInfoPage> {
       final savedImage = await File(pickedImage.path).copy('${appDir.path}/$fileName');
 
       setState(() {
-        _imageFile = savedImage;  // update with new image
+        _imageFile = savedImage;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Provider.of<ThemeController>(context);
+
+    final bgColor = themeController.isDarkMode ? Colors.black : const Color(0xFFF5F7FA);
+    final textColor = themeController.isDarkMode ? Colors.white : const Color(0xFF1F1F1F);
+    final cardColor = themeController.isDarkMode ? Colors.grey[900] : Colors.white;
+    final hintColor = themeController.isDarkMode ? Colors.grey[600] : Colors.grey.shade400;
+    final iconColor = themeController.isDarkMode ? Colors.red.shade200 : Colors.red.shade400;
+    final shadowColor = themeController.isDarkMode ? Colors.black54 : Colors.black.withOpacity(0.1);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text(
-          "Acil Durum Bilgileri",
+        title: Text(
+          "Kullanıcı Bilgileri",
           style: TextStyle(
-            color: Color(0xFF1F1F1F),
+            color: textColor,
             fontWeight: FontWeight.w700,
             fontSize: 25,
             fontFamily: 'Poppins',
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: themeController.isDarkMode ? Colors.grey[850] : Colors.white,
         elevation: 2,
-        iconTheme: const IconThemeData(color: Color(0xFF1F1F1F)),
+        iconTheme: IconThemeData(color: textColor),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -115,14 +126,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
             children: [
               Center(
                 child: GestureDetector(
-                  onTap: _pickImage,  // pick profile image
+                  onTap: _pickImage,
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.red.shade400, width: 3),
+                      border: Border.all(color: iconColor, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.red.shade200.withOpacity(0.4),
+                          color: iconColor.withOpacity(0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -131,54 +142,55 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     padding: const EdgeInsets.all(6),
                     child: CircleAvatar(
                       radius: 60,
-                      backgroundColor: Colors.white,
+                      backgroundColor: themeController.isDarkMode ? Colors.grey[800] : Colors.white,
                       backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
                       child: _imageFile == null
-                          ? Icon(Icons.camera_alt, size: 60, color: Colors.red.shade400)
+                          ? Icon(Icons.camera_alt, size: 60, color: iconColor)
                           : null,
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 15),
-              _buildInputField(_nameController, "Ad"),  // name input
+              _buildInputField(_nameController, "Ad", textColor, cardColor, hintColor, shadowColor),
               const SizedBox(height: 15),
-              _buildInputField(_surnameController, "Soyad"),  // surname input
+              _buildInputField(_surnameController, "Soyad", textColor, cardColor, hintColor, shadowColor),
               const SizedBox(height: 15),
-              _buildBloodGroupDropdown(),  // blood group dropdown
+              _buildBloodGroupDropdown(textColor, cardColor, hintColor, shadowColor),
               const SizedBox(height: 15),
-              _buildInputField(_emergencyNoteController, "Acil Durum Notu"),  // emergency note
+              _buildInputField(_emergencyNoteController, "Acil Durum Notu", textColor, cardColor, hintColor, shadowColor),
               const SizedBox(height: 15),
-              _buildInputField(_medicalInfoController, "İlaç / Alerji Bilgisi"),  // medical info
+              _buildInputField(_medicalInfoController, "İlaç / Alerji Bilgisi", textColor, cardColor, hintColor, shadowColor),
               const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Evcil Hayvanınız var mı?",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
+                      color: textColor,
                     ),
                   ),
                   Switch(
                     value: _hasPet,
                     onChanged: (value) {
                       setState(() {
-                        _hasPet = value;  // toggle pet ownership
+                        _hasPet = value;
                       });
                     },
-                    activeColor: Colors.red.shade400,
+                    activeColor: iconColor,
                   )
                 ],
               ),
               const SizedBox(height: 25),
-              _buildEmergencyContactButton(),  // navigate to emergency contacts
+              _buildEmergencyContactButton(themeController.isDarkMode),
               const SizedBox(height: 45),
               Center(
                 child: ElevatedButton(
-                  onPressed: _saveUserData,  // save all user data
+                  onPressed: _saveUserData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red.shade600,
                     padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
@@ -206,14 +218,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget _buildInputField(TextEditingController controller, String hint) {
+  Widget _buildInputField(TextEditingController controller, String hint, Color textColor, Color? bgColor, Color? hintColor, Color shadowColor) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: shadowColor,
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -222,15 +234,15 @@ class _UserInfoPageState extends State<UserInfoPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: controller,
-        style: const TextStyle(
-          color: Color(0xFF1F1F1F),
+        style: TextStyle(
+          color: textColor,
           fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Poppins',
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey.shade400),
+          hintStyle: TextStyle(color: hintColor),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 18),
         ),
@@ -241,14 +253,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget _buildBloodGroupDropdown() {
+  Widget _buildBloodGroupDropdown(Color textColor, Color? bgColor, Color? hintColor, Color shadowColor) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: shadowColor,
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -258,23 +270,27 @@ class _UserInfoPageState extends State<UserInfoPage> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedBloodGroup.isNotEmpty ? _selectedBloodGroup : null,
-          hint: Text("Kan Grubu", style: TextStyle(color: Colors.grey.shade400)),
+          hint: Text(
+            "Kan Grubu",
+            style: TextStyle(color: hintColor),
+          ),
           items: _bloodGroups.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   fontFamily: 'Poppins',
+                  color: textColor,
                 ),
               ),
             );
           }).toList(),
           onChanged: (String? newValue) {
             setState(() {
-              _selectedBloodGroup = newValue ?? '';  // select blood group
+              _selectedBloodGroup = newValue ?? '';
             });
           },
         ),
@@ -282,19 +298,19 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget _buildEmergencyContactButton() {
+  Widget _buildEmergencyContactButton(bool isDarkMode) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  EmergencyContact()),
+            MaterialPageRoute(builder: (context) => const EmergencyContact()),
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey.shade800,
-          padding: const EdgeInsets.symmetric(vertical:20, horizontal: 40),
+          backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey.shade800,
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(35),
           ),

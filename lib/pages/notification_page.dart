@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:afet_acil_durum_app/pages/settings.dart';
 import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
 import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notification_page.dart';
-import 'package:afet_acil_durum_app/pages/settings.dart';
 import 'package:afet_acil_durum_app/services/connectivity_service.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
-class NotificaitonPage extends StatefulWidget {
-  const NotificaitonPage({super.key});
+class NotificationPage extends StatefulWidget {
+  const NotificationPage({super.key});
 
   @override
-  NotificaitonPageState createState() => NotificaitonPageState();
+  NotificationPageState createState() => NotificationPageState();
 }
 
-class NotificaitonPageState extends State<NotificaitonPage> {
+class NotificationPageState extends State<NotificationPage> {
   final List<Map<String, dynamic>> bildirimler = [
     {
       "baslik": "Acil Durum Uyarısı",
@@ -68,18 +69,18 @@ class NotificaitonPageState extends State<NotificaitonPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Provider.of<ThemeController>(context);
+    final isDark = themeController.isDarkMode;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: isDark ? Colors.black : Colors.grey[100],
       body: SafeArea(
         child: Column(
           children: [
-            // Sabit header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: buildHeader(),
+              child: buildHeader(isDark),
             ),
-
-            // Kaydırılabilir içerik
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -90,14 +91,14 @@ class NotificaitonPageState extends State<NotificaitonPage> {
                     Text(
                       "BİLDİRİMLER",
                       style: TextStyle(
-                        color: Colors.grey[800],
+                        color: isDark ? Colors.white70 : Colors.grey[800],
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    buildNotificationContainer(),
+                    buildNotificationContainer(isDark),
                     const SizedBox(height: 32),
                     buildBigBell(context),
                     const SizedBox(height: 24),
@@ -105,8 +106,6 @@ class NotificaitonPageState extends State<NotificaitonPage> {
                 ),
               ),
             ),
-
-            // Sabit alt navigasyon
             buildBottomNavigationBar(context),
           ],
         ),
@@ -114,7 +113,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
     );
   }
 
-  Widget buildHeader() {
+  Widget buildHeader(bool isDark) {
     return StreamBuilder<BaglantiDurumu>(
       stream: _connectivityService.baglantiStream,
       initialData: _connectivityService.mevcutDurum,
@@ -158,14 +157,14 @@ class NotificaitonPageState extends State<NotificaitonPage> {
     );
   }
 
-  Widget buildNotificationContainer() {
+  Widget buildNotificationContainer(bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.blueGrey.shade300,
+        color: isDark ? Colors.blueGrey.shade900 : Colors.blueGrey.shade300,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.blueGrey.shade100.withOpacity(0.5),
+            color: (isDark ? Colors.blueGrey.shade800 : Colors.blueGrey.shade100).withOpacity(0.5),
             blurRadius: 12,
             offset: Offset(0, 6),
           ),
@@ -194,13 +193,13 @@ class NotificaitonPageState extends State<NotificaitonPage> {
             ],
           ),
           const SizedBox(height: 20),
-          ...bildirimler.map((bildirim) => buildNotificationItem(bildirim)).toList(),
+          ...bildirimler.map((bildirim) => buildNotificationItem(bildirim, isDark)).toList(),
         ],
       ),
     );
   }
 
-  Widget buildNotificationItem(Map<String, dynamic> bildirim) {
+  Widget buildNotificationItem(Map<String, dynamic> bildirim, bool isDark) {
     Color tipRengi = bildirim['tip'] == 'acil'
         ? Colors.red.shade600
         : bildirim['tip'] == 'uyari'
@@ -226,7 +225,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
           context: context,
           builder: (_) => AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            backgroundColor: Colors.grey[100],
+            backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
             title: Row(
               children: [
                 Icon(tipIcon, color: tipRengi, size: 24),
@@ -236,7 +235,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
                     bildirim['baslik'],
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                      color: isDark ? Colors.white70 : Colors.grey[800],
                     ),
                   ),
                 ),
@@ -246,12 +245,15 @@ class NotificaitonPageState extends State<NotificaitonPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(bildirim['mesaj']),
+                Text(
+                  bildirim['mesaj'],
+                  style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[800]),
+                ),
                 const SizedBox(height: 12),
                 Text(
                   bildirim['zaman'],
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color: isDark ? Colors.grey[500] : Colors.grey[600],
                     fontSize: 12,
                   ),
                 ),
@@ -261,7 +263,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.blueGrey.shade700,
+                  foregroundColor: isDark ? Colors.blueGrey.shade300 : Colors.blueGrey.shade700,
                 ),
                 child: const Text("Kapat", style: TextStyle(fontWeight: FontWeight.w600)),
               ),
@@ -272,11 +274,13 @@ class NotificaitonPageState extends State<NotificaitonPage> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: bildirim['okundu'] ? Colors.white.withOpacity(0.7) : Colors.white,
+          color: bildirim['okundu']
+              ? (isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.7))
+              : (isDark ? Colors.white.withOpacity(0.15) : Colors.white),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: isDark ? Colors.black45 : Colors.black12,
               blurRadius: 4,
               offset: Offset(0, 2),
             ),
@@ -302,7 +306,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
             style: TextStyle(
               fontWeight: bildirim['okundu'] ? FontWeight.w500 : FontWeight.bold,
               fontSize: 14,
-              color: Colors.grey[800],
+              color: isDark ? Colors.white70 : Colors.grey[800],
             ),
           ),
           subtitle: Column(
@@ -313,7 +317,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
                 bildirim['mesaj'],
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: isDark ? Colors.white54 : Colors.grey[600],
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -323,7 +327,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
                 bildirim['zaman'],
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.grey[500],
+                  color: isDark ? Colors.white38 : Colors.grey[500],
                 ),
               ),
             ],
@@ -400,15 +404,15 @@ class NotificaitonPageState extends State<NotificaitonPage> {
           children: [
             navIcon(
               icon: Icons.settings,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Settings())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Settings())),
             ),
             navIcon(
               icon: Icons.people,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyContact())),
             ),
             navIcon(
               icon: Icons.home,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Homepage())),
             ),
             navIcon(
               icon: Icons.notifications,
@@ -417,7 +421,7 @@ class NotificaitonPageState extends State<NotificaitonPage> {
             ),
             navIcon(
               icon: Icons.map,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MapArea())),
             ),
           ],
         ),
