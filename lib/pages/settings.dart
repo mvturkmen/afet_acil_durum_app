@@ -111,7 +111,7 @@ class SettingsState extends State<Settings> {
                     Expanded(
                       child: buildSettingsCard(
                         title: text,
-                        subtitle: "Gizlilik ve güvenlik ayarları",
+                        subtitle: "Sesli Mesaj Bırakın",
                         icon: Icons.privacy_tip,
                         onTap: () async {
                           String newText = await _speechService.startListening();
@@ -120,7 +120,7 @@ class SettingsState extends State<Settings> {
                           });
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Gizlilik seçildi!')),
+                            const SnackBar(content: Text('Sesli mesaj seçildi!')),
                           );
                         },
                         onDoubleTap: () {
