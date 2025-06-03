@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'homepage.dart';
+import 'package:afet_acil_durum_app/pages/homepage.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -19,35 +21,55 @@ class LoginState extends State<Login> {
   final _emergencyContactController = TextEditingController();
 
   void _showRegisterDialog() {
+    final themeController = Provider.of<ThemeController>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Kayıt Ol"),
+        backgroundColor: themeController.isDarkMode ? Colors.grey[900] : Colors.white,
+        title: Text("Kayıt Ol", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _registerEmailController,
-              decoration: const InputDecoration(labelText: "Mail"),
+              decoration: InputDecoration(
+                labelText: "Mail",
+                labelStyle: TextStyle(color: themeController.isDarkMode ? Colors.white70 : Colors.black54),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeController.isDarkMode ? Colors.white54 : Colors.black26)),
+              ),
+              style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black),
             ),
             TextField(
               controller: _registerPasswordController,
-              decoration: const InputDecoration(labelText: "Şifre"),
+              decoration: InputDecoration(
+                labelText: "Şifre",
+                labelStyle: TextStyle(color: themeController.isDarkMode ? Colors.white70 : Colors.black54),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeController.isDarkMode ? Colors.white54 : Colors.black26)),
+              ),
               obscureText: true,
+              style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black),
             ),
             TextField(
               controller: _emergencyContactController,
-              decoration: const InputDecoration(labelText: "Acil Kişi Numarası"),
+              decoration: InputDecoration(
+                labelText: "Acil Kişi Numarası",
+                labelStyle: TextStyle(color: themeController.isDarkMode ? Colors.white70 : Colors.black54),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeController.isDarkMode ? Colors.white54 : Colors.black26)),
+              ),
               keyboardType: TextInputType.phone,
+              style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black),
             ),
           ],
         ),
         actions: [
           TextButton(
-            child: const Text("İptal"),
+            child: Text("İptal", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
             onPressed: () => Navigator.of(context).pop(),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: themeController.isDarkMode ? Colors.blueGrey : Colors.blue,
+            ),
             child: const Text("Kayıt Ol"),
             onPressed: () {
               Navigator.of(context).pop();
@@ -71,10 +93,13 @@ class LoginState extends State<Login> {
     bool hasPet = prefs.getBool('hasPet') ?? false;
     String? imagePath = prefs.getString('profileImagePath');
 
+    final themeController = Provider.of<ThemeController>(context, listen: false);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Acil Durum Bilgileri"),
+        backgroundColor: themeController.isDarkMode ? Colors.grey[900] : Colors.white,
+        title: Text("Acil Durum Bilgileri", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -87,12 +112,12 @@ class LoginState extends State<Login> {
               const SizedBox(height: 20),
               ListBody(
                 children: [
-                  Text("Ad: $name"),
-                  Text("Soyad: $surname"),
-                  Text("Kan Grubu: $bloodGroup"),
-                  Text("Acil Not: $emergencyNote"),
-                  Text("İlaç/Alerji: $medicalInfo"),
-                  Text("Evcil Hayvan: ${hasPet ? "Var" : "Yok"}"),
+                  Text("Ad: $name", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
+                  Text("Soyad: $surname", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
+                  Text("Kan Grubu: $bloodGroup", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
+                  Text("Acil Not: $emergencyNote", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
+                  Text("İlaç/Alerji: $medicalInfo", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
+                  Text("Evcil Hayvan: ${hasPet ? "Var" : "Yok"}", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
                 ],
               ),
             ],
@@ -101,7 +126,7 @@ class LoginState extends State<Login> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Kapat"),
+            child: Text("Kapat", style: TextStyle(color: themeController.isDarkMode ? Colors.white : Colors.black)),
           ),
         ],
       ),
@@ -120,9 +145,17 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Provider.of<ThemeController>(context);
+
+    final textColor = themeController.isDarkMode ? Colors.white : Colors.black;
+    final backgroundColor = themeController.isDarkMode ? Colors.black : Colors.white;
+    final buttonColor = themeController.isDarkMode ? Colors.blueGrey : Colors.blue;
+    final inputFillColor = themeController.isDarkMode ? Colors.grey[850] : Colors.grey[200];
+
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -136,13 +169,27 @@ class LoginState extends State<Login> {
               const SizedBox(height: 40),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: "Mail"),
+                decoration: InputDecoration(
+                  labelText: "Mail",
+                  labelStyle: TextStyle(color: textColor.withOpacity(0.7)),
+                  filled: true,
+                  fillColor: inputFillColor,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                style: TextStyle(color: textColor),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: "Şifre"),
+                decoration: InputDecoration(
+                  labelText: "Şifre",
+                  labelStyle: TextStyle(color: textColor.withOpacity(0.7)),
+                  filled: true,
+                  fillColor: inputFillColor,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
                 obscureText: true,
+                style: TextStyle(color: textColor),
               ),
               const SizedBox(height: 32),
               ElevatedButton(
@@ -150,13 +197,20 @@ class LoginState extends State<Login> {
                 child: const Text("Giriş Yap"),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.blueGrey,
+                  backgroundColor: buttonColor,
                 ),
               ),
               const SizedBox(height: 16),
               OutlinedButton(
                 onPressed: _showRegisterDialog,
-                child: const Text("Kayıt Ol"),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: buttonColor),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: Text(
+                  "Kayıt Ol",
+                  style: TextStyle(color: buttonColor),
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(

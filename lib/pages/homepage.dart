@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
-import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/settings.dart';
-import 'package:afet_acil_durum_app/services/notiService.dart';
-import 'package:afet_acil_durum_app/services/location_service.dart';
+import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
+import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/services/connectivity_service.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:afet_acil_durum_app/services/notification_service.dart';
+import 'package:afet_acil_durum_app/services/location_service.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
-
   @override
   HomepageState createState() => HomepageState();
 }
@@ -19,7 +19,7 @@ class HomepageState extends State<Homepage> {
   String textField1 = '';
   String textField2 = '';
 
-  final NotiService _notiService = NotiService();
+  final NotificationService _notificationService = NotificationService();
   final ConnectivityService _connectivityService = ConnectivityService();
 
   // İlk bağlantı kontrolü tamamlandı mı?
@@ -60,7 +60,7 @@ class HomepageState extends State<Homepage> {
 
   Future<void> _initializeNotificationService() async {
     try {
-      await _notiService.initNotification();
+      await _notificationService.initNotification();
       print('Bildirim servisi başarıyla başlatıldı');
     } catch (e) {
       print('Bildirim servisi başlatılırken hata: $e');
@@ -69,8 +69,9 @@ class HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Provider.of<ThemeController>(context);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: themeController.isDarkMode ? Colors.black : Colors.grey[100],
       body: SafeArea(
         child: Column(
           children: [
@@ -91,7 +92,7 @@ class HomepageState extends State<Homepage> {
                     Text(
                       "YARDIM ÇAĞIR",
                       style: TextStyle(
-                        color: Colors.grey[800],
+                        color: themeController.isDarkMode ? Colors.white : Colors.grey[800],
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.2,
@@ -682,7 +683,7 @@ class HomepageState extends State<Homepage> {
               icon: Icons.notifications,
               onTap: () =>
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => NotificaitonPage())),
+                      MaterialPageRoute(builder: (_) => NotificationPage())),
             ),
             navIcon(
               icon: Icons.map,
@@ -877,7 +878,7 @@ class HomepageState extends State<Homepage> {
         ? await _connectivityService.acilDurumBaglantisiVar()
         : _hasMobileConnection;
 
-    if (!_notiService.isInitialized) {
+    if (!_notificationService.isInitialized) {
       await _initializeNotificationService();
     }
 
@@ -886,7 +887,7 @@ class HomepageState extends State<Homepage> {
         ? 'Acil yardım talebi gönderildi. En yakın yardım ekipleri bilgilendirildi.'
         : 'Acil yardım talebi kaydedildi. Bağlantı kurulduğunda gönderilecek.';
 
-    await _notiService.showNotification(
+    await _notificationService.showNotification(
       id: 1,
       title: title,
       body: body,
@@ -902,7 +903,7 @@ class HomepageState extends State<Homepage> {
         ? await _connectivityService.acilDurumBaglantisiVar()
         : _hasMobileConnection;
 
-    if (!_notiService.isInitialized) {
+    if (!_notificationService.isInitialized) {
       await _initializeNotificationService();
     }
 
@@ -910,7 +911,7 @@ class HomepageState extends State<Homepage> {
         ? 'Konumunuz acil durum ekipleriyle paylaşıldı.'
         : 'Konum bilgisi kaydedildi. Bağlantı kurulduğunda paylaşılacak.';
 
-    await _notiService.showNotification(
+    await _notificationService.showNotification(
       id: 2,
       title: '📍 Konum Paylaşıldı',
       body: body,
@@ -921,11 +922,11 @@ class HomepageState extends State<Homepage> {
 
 
   Future<void> _sendFlashlightNotification() async {
-    if (!_notiService.isInitialized) {
+    if (!_notificationService.isInitialized) {
       await _initializeNotificationService();
     }
 
-    await _notiService.showNotification(
+    await _notificationService.showNotification(
       id: 3,
       title: '🔦 El Feneri',
       body: 'El feneri özelliği aktif edildi.',
@@ -933,11 +934,11 @@ class HomepageState extends State<Homepage> {
   }
 
   Future<void> _sendWhistleNotification() async {
-    if (!_notiService.isInitialized) {
+    if (!_notificationService.isInitialized) {
       await _initializeNotificationService();
     }
 
-    await _notiService.showNotification(
+    await _notificationService.showNotification(
       id: 4,
       title: '📢 Düdük Sesi',
       body: 'Acil durum düdük sesi çalınıyor.',
@@ -945,11 +946,11 @@ class HomepageState extends State<Homepage> {
   }
 
   Future<void> _sendAlarmNotification() async {
-    if (!_notiService.isInitialized) {
+    if (!_notificationService.isInitialized) {
       await _initializeNotificationService();
     }
 
-    await _notiService.showNotification(
+    await _notificationService.showNotification(
       id: 5,
       title: '🔔 ALARM!',
       body: 'Genel alarm sistemi aktif edildi.',

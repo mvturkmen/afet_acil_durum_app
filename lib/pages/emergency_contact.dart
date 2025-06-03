@@ -1,12 +1,11 @@
-import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
-import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/settings.dart';
-import 'package:afet_acil_durum_app/services/notiService.dart';
-import 'package:afet_acil_durum_app/services/location_service.dart';
+import 'package:afet_acil_durum_app/pages/homepage.dart';
+import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/services/connectivity_service.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class EmergencyContact extends StatefulWidget {
   const EmergencyContact({super.key});
@@ -38,18 +37,18 @@ class EmergencyContactState extends State<EmergencyContact> {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Provider.of<ThemeController>(context);
+    final isDark = themeController.isDarkMode;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: isDark ? Colors.black : Colors.grey[100],
       body: SafeArea(
         child: Column(
           children: [
-            // Sabit header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: buildHeader(),
+              child: buildHeader(isDark),
             ),
-
-            // Kaydırılabilir içerik
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -60,14 +59,14 @@ class EmergencyContactState extends State<EmergencyContact> {
                     Text(
                       "ACİL DURUM KİŞİLERİ",
                       style: TextStyle(
-                        color: Colors.grey[800],
+                        color: isDark ? Colors.white : Colors.grey[800],
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    buildContactsList(),
+                    buildContactsList(isDark),
                     const SizedBox(height: 32),
                     buildBigBell(context),
                     const SizedBox(height: 24),
@@ -75,8 +74,6 @@ class EmergencyContactState extends State<EmergencyContact> {
                 ),
               ),
             ),
-
-            // Sabit alt navigasyon
             buildBottomNavigationBar(context),
           ],
         ),
@@ -84,7 +81,7 @@ class EmergencyContactState extends State<EmergencyContact> {
     );
   }
 
-  Widget buildHeader() {
+  Widget buildHeader(bool isDark) {
     return StreamBuilder<BaglantiDurumu>(
       stream: _connectivityService.baglantiStream,
       initialData: _connectivityService.mevcutDurum,
@@ -128,10 +125,10 @@ class EmergencyContactState extends State<EmergencyContact> {
     );
   }
 
-  Widget buildContactsList() {
+  Widget buildContactsList(bool isDark) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: kisiler.length,
       itemBuilder: (context, index) {
         final kisi = kisiler[index];
@@ -141,13 +138,13 @@ class EmergencyContactState extends State<EmergencyContact> {
               context: context,
               builder: (_) => AlertDialog(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                backgroundColor: Colors.grey[100],
+                backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
                 title: Text(
-                    kisi['isim']!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    )
+                  kisi['isim']!,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.grey[800],
+                  ),
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -155,18 +152,18 @@ class EmergencyContactState extends State<EmergencyContact> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.phone, color: Colors.blueGrey.shade600, size: 20),
+                        Icon(Icons.phone, color: isDark ? Colors.white70 : Colors.blueGrey.shade600, size: 20),
                         const SizedBox(width: 8),
-                        Expanded(child: Text("${kisi['telefon']}")),
+                        Expanded(child: Text("${kisi['telefon']}", style: TextStyle(color: isDark ? Colors.white70 : Colors.black87))),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.location_on, color: Colors.blueGrey.shade600, size: 20),
+                        Icon(Icons.location_on, color: isDark ? Colors.white70 : Colors.blueGrey.shade600, size: 20),
                         const SizedBox(width: 8),
-                        Expanded(child: Text("${kisi['adres']}")),
+                        Expanded(child: Text("${kisi['adres']}", style: TextStyle(color: isDark ? Colors.white70 : Colors.black87))),
                       ],
                     ),
                   ],
@@ -175,7 +172,7 @@ class EmergencyContactState extends State<EmergencyContact> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.blueGrey.shade700,
+                      foregroundColor: isDark ? Colors.white70 : Colors.blueGrey.shade700,
                     ),
                     child: const Text("Kapat", style: TextStyle(fontWeight: FontWeight.w600)),
                   ),
@@ -186,13 +183,13 @@ class EmergencyContactState extends State<EmergencyContact> {
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: Colors.blueGrey.shade300,
+              color: isDark ? Colors.blueGrey.shade700 : Colors.blueGrey.shade300,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blueGrey.shade100.withOpacity(0.5),
+                  color: isDark ? Colors.black54 : Colors.blueGrey.shade100.withOpacity(0.5),
                   blurRadius: 6,
-                  offset: Offset(0, 3),
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -203,7 +200,7 @@ class EmergencyContactState extends State<EmergencyContact> {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -245,9 +242,9 @@ class EmergencyContactState extends State<EmergencyContact> {
                   ),
                 ),
                 const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.white,
-                    size: 18
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                  size: 18,
                 ),
               ],
             ),
@@ -262,7 +259,7 @@ class EmergencyContactState extends State<EmergencyContact> {
       child: GestureDetector(
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Acil durum alarmı aktifleştirildi!'),
               backgroundColor: Colors.red,
               duration: Duration(seconds: 2),
@@ -279,11 +276,11 @@ class EmergencyContactState extends State<EmergencyContact> {
               BoxShadow(
                 color: Colors.red.shade300.withOpacity(0.7),
                 blurRadius: 10,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Icon(
+          child: const Icon(
             Icons.notifications_active,
             color: Colors.white,
             size: 40,
@@ -298,14 +295,14 @@ class EmergencyContactState extends State<EmergencyContact> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.blueGrey.shade700,
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 4,
             offset: Offset(0, 2),
           ),
         ],
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: SafeArea(
         top: false,
@@ -314,24 +311,24 @@ class EmergencyContactState extends State<EmergencyContact> {
           children: [
             navIcon(
               icon: Icons.settings,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Settings())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Settings())),
             ),
             navIcon(
               icon: Icons.people,
               isActive: true,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyContact())),
             ),
             navIcon(
               icon: Icons.home,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Homepage())),
             ),
             navIcon(
               icon: Icons.notifications,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificaitonPage())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationPage())),
             ),
             navIcon(
               icon: Icons.map,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MapArea())),
             ),
           ],
         ),
