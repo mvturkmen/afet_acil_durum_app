@@ -26,128 +26,233 @@ class ConnectivityService {
 
   final Connectivity _connectivity = Connectivity();
   StreamController<BaglantiDurumu>? _baglantiController;
-  BaglantiDurumu _mevcutDurum = BaglantiDurumu.cevrimici;
+  StreamController<BaglantiTipi>? _baglantiTipiController;
+  BaglantiDurumu _mevcutDurum = BaglantiDurumu.cevrimdisi;
   BaglantiTipi _mevcutTip = BaglantiTipi.yok;
+  StreamSubscription? _connectivitySubscription;
+  Timer? _periodicTimer;
+  bool _ilkKontrolTamamlandi = false;
 
-  Stream<BaglantiDurumu> get baglantiStream => _baglantiController!.stream;
+  // Getters
+  Stream<BaglantiDurumu>? get baglantiStream => _baglantiController?.stream;
+  Stream<BaglantiTipi>? get baglantiTipiStream => _baglantiTipiController?.stream;
   BaglantiDurumu get mevcutDurum => _mevcutDurum;
   BaglantiTipi get mevcutTip => _mevcutTip;
 
   void baslat() {
+    // Eğer zaten başlatılmışsa önce temizle
+    kapat();
+
     _baglantiController = StreamController<BaglantiDurumu>.broadcast();
-    _connectivity.onConnectivityChanged.listen(_baglantiDegisti);
-    _ilkKontrol();
+    _baglantiTipiController = StreamController<BaglantiTipi>.broadcast();
+    _ilkKontrolTamamlandi = false;
+
+    // İlk kontrol - biraz gecikme ile
+    _gecikmeliIlkKontrol();
+
+    // Connectivity değişimlerini dinle
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
+      _baglantiDegisti,
+      onError: (error) {
+        print('Connectivity stream hatası: $error');
+        _durumGuncelle(BaglantiDurumu.cevrimdisi, BaglantiTipi.yok);
+      },
+    );
+
+    // Periyodik kontrol (her 10 saniyede bir)
+    _periodicTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+      _periyodikKontrol();
+    });
   }
 
-  void _ilkKontrol() async {
-    final result = await _connectivity.checkConnectivity();
-    _baglantiDegisti(result);
-  }
+  void _gecikmeliIlkKontrol() async {
+    // Kısa bir gecikme ile başlat - sistem hazır olsun diye
+    await Future.delayed(Duration(milliseconds: 500));
 
-  void _baglantiDegisti(List<ConnectivityResult> result) async {
-    if (result.contains(ConnectivityResult.none)) {
+    try {
+      // Birden fazla deneme yap
+      for (int i = 0; i < 3; i++) {
+        try {
+          final result = await _connectivity.checkConnectivity();
+          print('İlk kontrol denemesi ${i + 1}: $result');
+
+          if (result.isNotEmpty && !result.contains(ConnectivityResult.none)) {
+            await _baglantiDegisti(result);
+            _ilkKontrolTamamlandi = true;
+            break;
+          }
+
+          // Eğer sonuç boş veya none ise kısa bir bekleme
+          if (i < 2) {
+            await Future.delayed(Duration(milliseconds: 1000));
+          }
+        } catch (e) {
+          print('İlk kontrol denemesi ${i + 1} hatası: $e');
+          if (i < 2) {
+            await Future.delayed(Duration(milliseconds: 1000));
+          }
+        }
+      }
+
+      // Hala başarısız olduysa varsayılan durumu ayarla
+      if (!_ilkKontrolTamamlandi) {
+        print('İlk kontrol başarısız, varsayılan durum ayarlanıyor');
+        _durumGuncelle(BaglantiDurumu.cevrimdisi, BaglantiTipi.yok);
+        _ilkKontrolTamamlandi = true;
+      }
+    } catch (e) {
+      print('İlk kontrol genel hatası: $e');
       _durumGuncelle(BaglantiDurumu.cevrimdisi, BaglantiTipi.yok);
-      return;
+      _ilkKontrolTamamlandi = true;
     }
+  }
 
-    // Bağlantı tipini belirle
-    BaglantiTipi yeniTip = _baglantiTipiBelirle(result);
+  void _periyodikKontrol() async {
+    try {
+      final result = await _connectivity.checkConnectivity();
+      await _baglantiDegisti(result);
+    } catch (e) {
+      print('Periyodik kontrol hatası: $e');
+    }
+  }
 
-    // Gerçek internet kontrolü - daha güvenli
-    final internetVar = await _internetKontrolGelismis();
-    BaglantiDurumu yeniDurum = internetVar
-        ? BaglantiDurumu.cevrimici
-        : BaglantiDurumu.sinirli;
+  Future<void> _baglantiDegisti(List<ConnectivityResult> result) async {
+    try {
+      print('Bağlantı değişikliği algılandı: $result');
 
-    _durumGuncelle(yeniDurum, yeniTip);
+      // Bağlantı yoksa
+      if (result.isEmpty || result.contains(ConnectivityResult.none)) {
+        _durumGuncelle(BaglantiDurumu.cevrimdisi, BaglantiTipi.yok);
+        return;
+      }
+
+      // Bağlantı tipini belirle
+      BaglantiTipi yeniTip = _baglantiTipiBelirle(result);
+
+      // Internet erişimi kontrolü - ilk kontrol için daha uzun timeout
+      final timeoutDuration = _ilkKontrolTamamlandi
+          ? Duration(seconds: 3)
+          : Duration(seconds: 5);
+
+      final internetVar = await _hizliInternetKontrol(timeoutDuration);
+      BaglantiDurumu yeniDurum;
+
+      if (internetVar) {
+        yeniDurum = BaglantiDurumu.cevrimici;
+      } else {
+        // Bağlantı var ama internet yok - tekrar dene
+        await Future.delayed(Duration(milliseconds: 500));
+        final tekrarKontrol = await _hizliInternetKontrol(Duration(seconds: 2));
+        yeniDurum = tekrarKontrol ? BaglantiDurumu.cevrimici : BaglantiDurumu.sinirli;
+      }
+
+      _durumGuncelle(yeniDurum, yeniTip);
+    } catch (e) {
+      print('Bağlantı değişiklik hatası: $e');
+      _durumGuncelle(BaglantiDurumu.cevrimdisi, BaglantiTipi.yok);
+    }
   }
 
   BaglantiTipi _baglantiTipiBelirle(List<ConnectivityResult> result) {
+    // Öncelik sırasına göre kontrol et
     if (result.contains(ConnectivityResult.wifi)) {
       return BaglantiTipi.wifi;
     } else if (result.contains(ConnectivityResult.mobile)) {
       return BaglantiTipi.mobilVeri;
     } else if (result.contains(ConnectivityResult.ethernet)) {
       return BaglantiTipi.ethernet;
-    } else if (result.contains(ConnectivityResult.bluetooth)) {
-      return BaglantiTipi.bluetooth;
     } else if (result.contains(ConnectivityResult.vpn)) {
       return BaglantiTipi.vpn;
+    } else if (result.contains(ConnectivityResult.bluetooth)) {
+      return BaglantiTipi.bluetooth;
     } else {
       return BaglantiTipi.yok;
     }
   }
 
   void _durumGuncelle(BaglantiDurumu durum, BaglantiTipi tip) {
+    bool durumDegisti = _mevcutDurum != durum;
+    bool tipDegisti = _mevcutTip != tip;
+
     _mevcutDurum = durum;
     _mevcutTip = tip;
-    _baglantiController?.add(durum);
-  }
 
-  // Gelişmiş internet kontrol metodu
-  Future<bool> _internetKontrolGelismis() async {
-    try {
-      // Birden fazla endpoint dene
-      final List<String> testUrls = [
-        'https://www.google.com',
-        'https://8.8.8.8', // Google DNS
-        'https://1.1.1.1', // Cloudflare DNS
-      ];
+    // Sadece değişim varsa stream'e bildir
+    if (durumDegisti && _baglantiController != null && !_baglantiController!.isClosed) {
+      _baglantiController!.add(durum);
+    }
 
-      for (String url in testUrls) {
-        try {
-          final response = await http.get(
-            Uri.parse(url),
-          ).timeout(const Duration(seconds: 3));
+    if (tipDegisti && _baglantiTipiController != null && !_baglantiTipiController!.isClosed) {
+      _baglantiTipiController!.add(tip);
+    }
 
-          if (response.statusCode == 200) {
-            return true;
-          }
-        } catch (e) {
-          print('URL kontrol hatası ($url): $e');
-          continue; // Bir sonraki URL'yi dene
-        }
-      }
-
-      return false;
-    } catch (e) {
-      print('Genel internet kontrol hatası: $e');
-      return false;
+    // Debug için
+    if (durumDegisti || tipDegisti) {
+      print('Bağlantı güncellendi: ${baglantiDurumuMetni()} - ${baglantiTipiMetni()}');
     }
   }
 
-  // Alternatif socket tabanlı kontrol
-  Future<bool> _socketKontrol() async {
+  // Hızlı internet kontrolü (özelleştirilebilir timeout)
+  Future<bool> _hizliInternetKontrol([Duration? timeout]) async {
+    final timeoutDuration = timeout ?? Duration(seconds: 3);
+
     try {
-      final result = await InternetAddress.lookup('google.com');
+      final response = await http.get(
+        Uri.parse('https://www.google.com'),
+      ).timeout(timeoutDuration);
+
+      return response.statusCode == 200;
+    } catch (e) {
+      // Google erişilemiyorsa DNS kontrol dene
+      return await _dnsKontrol();
+    }
+  }
+
+  // DNS kontrolü
+  Future<bool> _dnsKontrol() async {
+    try {
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(const Duration(seconds: 2));
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } catch (e) {
-      print('Socket kontrol hatası: $e');
       return false;
     }
   }
 
-  // Gelişmiş internet kontrolü (socket + http kombinasyonu)
-  Future<bool> _internetKontrol() async {
+  // Acil durum için bağlantı kontrolü
+  Future<bool> acilDurumBaglantisiVar() async {
     try {
-      // Önce socket kontrolü yap (daha hızlı)
-      bool socketResult = await _socketKontrol();
-      if (!socketResult) {
-        return false;
+      // Mevcut durumu kontrol et
+      if (_mevcutDurum == BaglantiDurumu.cevrimici) {
+        return true;
       }
 
-      // Socket başarılıysa HTTP kontrolü yap
-      return await _internetKontrolGelismis();
+      // Sınırlı bağlantıda da acil durum mesajı gönderilebilir
+      if (_mevcutDurum == BaglantiDurumu.sinirli) {
+        return true;
+      }
+
+      // Son bir kontrol daha yap
+      final result = await _connectivity.checkConnectivity();
+      if (result.isNotEmpty && !result.contains(ConnectivityResult.none)) {
+        return await _hizliInternetKontrol();
+      }
+
+      return false;
     } catch (e) {
-      print('İnternet kontrol hatası: $e');
+      print('Acil durum bağlantı kontrol hatası: $e');
       return false;
     }
   }
 
-  // Acil durum için özel kontrol
-  Future<bool> acilDurumBaglantisiVar() async {
-    final durum = _mevcutDurum;
-    return durum == BaglantiDurumu.cevrimici || durum == BaglantiDurumu.sinirli;
+  // Anlık durum kontrolü
+  Future<void> durumKontrolEt() async {
+    try {
+      final result = await _connectivity.checkConnectivity();
+      await _baglantiDegisti(result);
+    } catch (e) {
+      print('Durum kontrol hatası: $e');
+    }
   }
 
   String baglantiDurumuMetni() {
@@ -207,6 +312,18 @@ class ConnectivityService {
   }
 
   void kapat() {
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
+
+    _periodicTimer?.cancel();
+    _periodicTimer = null;
+
     _baglantiController?.close();
+    _baglantiController = null;
+
+    _baglantiTipiController?.close();
+    _baglantiTipiController = null;
+
+    _ilkKontrolTamamlandi = false;
   }
 }
