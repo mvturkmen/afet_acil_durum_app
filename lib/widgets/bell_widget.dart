@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/notifications/show_notification.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class BigBellWidget extends StatelessWidget {
-  final VoidCallback? onTap; // Opsiyonel hale getirdik
+  final VoidCallback? onTap;
 
   const BigBellWidget({
     Key? key,
     this.onTap,
   }) : super(key: key);
 
-  ShowNotification get _showNotification => ShowNotification(); // Lazy getter
+  ShowNotification get _showNotification => ShowNotification();
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Provider.of<ThemeController>(context);
+    final isDarkMode = themeController.isDarkMode;
+
     return Center(
       child: GestureDetector(
         onTap: () async {
           await _showNotification.sendAlarmNotification();
-          onTap?.call(); // Eğer tanımlıysa dışarıdan gelen onTap çalışsın
+          onTap?.call();
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Alarm bildirimi gönderildi!'),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 2),
+              content: const Text('Alarm bildirimi gönderildi!'),
+              backgroundColor: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
+              duration: const Duration(seconds: 2),
             ),
           );
         },
@@ -31,17 +36,17 @@ class BigBellWidget extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.red.shade700,
+            color: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.red.shade300.withOpacity(0.7),
+                color: (isDarkMode ? Colors.red.shade300 : Colors.red.shade300).withOpacity(0.7),
                 blurRadius: 10,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Icon(
+          child: const Icon(
             Icons.notifications_active,
             color: Colors.white,
             size: 40,

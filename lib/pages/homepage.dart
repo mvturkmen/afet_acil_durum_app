@@ -4,17 +4,18 @@ import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/services/notifications/notification_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
+import 'package:afet_acil_durum_app/widgets/authority_login_dialog.dart';
 import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
 import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
-import '../widgets/authority_login_dialog.dart';
-import '../widgets/connectivity_card_widget.dart';
-import '../widgets/dual_icon_row_widget.dart';
-import '../widgets/emergency_card_widget.dart';
-import '../widgets/header_widget.dart';
-import '../widgets/location_card_widget.dart';
+import 'package:afet_acil_durum_app/widgets/connectivity_card_widget.dart';
+import 'package:afet_acil_durum_app/widgets/dual_icon_row_widget.dart';
+import 'package:afet_acil_durum_app/widgets/emergency_card_widget.dart';
+import 'package:afet_acil_durum_app/widgets/header_widget.dart';
+import 'package:afet_acil_durum_app/widgets/location_card_widget.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
+
   @override
   HomepageState createState() => HomepageState();
 }
@@ -27,7 +28,6 @@ class HomepageState extends State<Homepage> {
   final ConnectivityService _connectivityService = ConnectivityService();
   final CheckConnection _checkConnection = CheckConnection();
 
-  // İlk bağlantı kontrolü tamamlandı mı?
   bool _initialConnectionCheckCompleted = false;
   bool _hasMobileConnection = false;
   bool isTorchOn = false;
@@ -40,17 +40,12 @@ class HomepageState extends State<Homepage> {
   }
 
   Future<void> _initializeServices() async {
-    // İlk olarak mobil bağlantı kontrolü yap
     _hasMobileConnection = await _checkConnection.checkMobileConnection();
 
-    // Bağlantı servisini başlat
-
-    // İlk kontrol tamamlandı olarak işaretle
     setState(() {
       _initialConnectionCheckCompleted = true;
     });
 
-    // Bildirim servisini başlat
     await _initializeNotificationService();
 
     print('Mobil bağlantı durumu: $_hasMobileConnection');
@@ -81,18 +76,15 @@ class HomepageState extends State<Homepage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Sabit header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child:  HeaderWidget(
+              child: HeaderWidget(
                 connectivityService: _connectivityService,
                 onAuthorityTap: () {
                   AuthorityLoginDialog.show(context);
                 },
               ),
             ),
-
-            // Kaydırılabilir içerik
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -110,9 +102,7 @@ class HomepageState extends State<Homepage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    EmergencyCardWidget(
-                      onTap: () {},
-                    ),
+                    EmergencyCardWidget(onTap: () {}),
                     LocationCardWidget(),
                     ConnectivityCardWidget(connectivityService: _connectivityService),
                     DualIconRowWidget(),
@@ -123,13 +113,10 @@ class HomepageState extends State<Homepage> {
                 ),
               ),
             ),
-
-            // Sabit alt navigasyon
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationWidget(activePage: 'home'),
-
     );
   }
 

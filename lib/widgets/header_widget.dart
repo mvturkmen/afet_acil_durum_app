@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class HeaderWidget extends StatelessWidget {
   final VoidCallback onAuthorityTap;
@@ -13,6 +15,20 @@ class HeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Provider.of<ThemeController>(context).isDarkMode;
+
+    final gradientColors = isDarkMode
+        ? [Colors.indigo.shade900, Colors.indigo.shade700]
+        : [Colors.indigo.shade600, Colors.indigo.shade400];
+
+    final boxShadowColor = isDarkMode
+        ? Colors.indigo.shade900.withOpacity(0.6)
+        : Colors.indigo.shade200.withOpacity(0.3);
+
+    final connectionBgColor = connectivityService.baglantiRengi().withOpacity(isDarkMode ? 0.2 : 0.1);
+    final connectionBorderColor = connectivityService.baglantiRengi().withOpacity(isDarkMode ? 0.5 : 1.0);
+    final connectionIconColor = connectivityService.baglantiRengi();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -22,14 +38,14 @@ class HeaderWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.indigo.shade600, Colors.indigo.shade400],
+                colors: gradientColors,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.indigo.shade200.withOpacity(0.3),
+                  color: boxShadowColor,
                   blurRadius: 4,
                   offset: Offset(0, 2),
                 ),
@@ -63,10 +79,10 @@ class HeaderWidget extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: connectivityService.baglantiRengi().withOpacity(0.1),
+                color: connectionBgColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: connectivityService.baglantiRengi(),
+                  color: connectionBorderColor,
                   width: 1.5,
                 ),
               ),
@@ -75,14 +91,14 @@ class HeaderWidget extends StatelessWidget {
                 children: [
                   Icon(
                     connectivityService.baglantiIkonu(),
-                    color: connectivityService.baglantiRengi(),
+                    color: connectionIconColor,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     connectivityService.baglantiTipiMetni(),
                     style: TextStyle(
-                      color: connectivityService.baglantiRengi(),
+                      color: connectionIconColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
