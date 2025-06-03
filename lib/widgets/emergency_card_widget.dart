@@ -45,11 +45,10 @@ class EmergencyCardWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Image.network(
-              "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/gol3gopo_expires_30_days.png",
+            Image.asset('assets/image/sos.png',
               width: 50,
               height: 50,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
             const SizedBox(width: 16),
             Expanded(

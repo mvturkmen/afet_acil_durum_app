@@ -43,10 +43,9 @@ class DualIconRowWidget extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Image.network(
-                    "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/fp9cumfa_expires_30_days.png",
-                    width: 50,
-                    height: 50,
+                  child: Image.asset('assets/image/flashlight.png',
+                    width: 60,
+                    height: 60,
                   ),
                 ),
               ),
@@ -79,10 +78,9 @@ class DualIconRowWidget extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Image.network(
-                    "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/vixwrgce_expires_30_days.png",
-                    width: 50,
-                    height: 50,
+                  child: Image.asset('assets/image/whistle.png',
+                    width: 60,
+                    height: 60,
                   ),
                 ),
               ),

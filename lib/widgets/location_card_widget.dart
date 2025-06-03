@@ -53,8 +53,7 @@ class LocationCardWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Image.network(
-              "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/BDiNJFehUq/8ha6n32n_expires_30_days.png",
+            Image.asset('assets/image/location.png',
               width: 50,
               height: 50,
               fit: BoxFit.cover,
