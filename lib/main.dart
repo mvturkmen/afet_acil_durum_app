@@ -1,10 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:afet_acil_durum_app/pages/login.dart';
+import 'package:afet_acil_durum_app/services/location/location_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
+import 'package:afet_acil_durum_app/background/location_tasks.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  bool permissionGranted = await LocationService().handlePermission();
+  if (!permissionGranted) {
+    print('Konum izni verilmedi!');
+  }
+
+  await Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: false,
+  );
+
+  // Testing
+  await Workmanager().registerOneOffTask(
+    "testTaskUnique",
+    fetchLocationTask,
+    initialDelay: const Duration(seconds: 5),
+  );
+
+  await Workmanager().registerPeriodicTask(
+    "fetchLocationTaskUnique",
+    fetchLocationTask,
+    frequency: const Duration(minutes: 15),
+    initialDelay: const Duration(seconds: 10),
+  );
+
   final themeController = ThemeController();
   await themeController.loadTheme();
 

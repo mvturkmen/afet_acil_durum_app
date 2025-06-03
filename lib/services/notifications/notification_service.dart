@@ -9,20 +9,20 @@ class NotificationService {
 
   // Initialize
   Future<void> initNotification() async {
-    if(_isInitialized) return; // prevent re-init
+    if (_isInitialized) return; // prevent re-init
     await notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-
 
     //prepare android init settings
     const initSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
 
     //prepare ios init settings
     const initSettingsIOS = DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
     );
 
     //init settings
@@ -34,7 +34,6 @@ class NotificationService {
     // finally, initialize the plugin
     await notificationsPlugin.initialize(initSettings);
   }
-
 
   // Notification Detail Setup
   NotificationDetails notificationDetails() {
@@ -61,4 +60,3 @@ class NotificationService {
     return notificationsPlugin.show(id, title, body, notificationDetails());
   }
 }
-
