@@ -9,10 +9,7 @@ void main() async {
   await themeController.loadTheme();
 
   runApp(
-    ChangeNotifierProvider.value(
-      value: themeController,
-      child: const MyApp(),
-    ),
+    ChangeNotifierProvider.value(value: themeController, child: const MyApp()),
   );
 }
 
