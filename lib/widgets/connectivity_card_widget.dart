@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class ConnectivityCardWidget extends StatelessWidget {
   final ConnectivityService connectivityService;
@@ -11,17 +13,28 @@ class ConnectivityCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Provider.of<ThemeController>(context).isDarkMode;
+
     return StreamBuilder<BaglantiDurumu>(
       stream: connectivityService.baglantiStream,
       initialData: connectivityService.mevcutDurum,
       builder: (context, snapshot) {
+        final baseColor = connectivityService.baglantiRengi();
+        final bgColor = isDarkMode
+            ? baseColor.withOpacity(0.15)
+            : baseColor.withOpacity(0.1);
+        final borderColor = isDarkMode
+            ? baseColor.withOpacity(0.4)
+            : baseColor.withOpacity(0.3);
+        final textColor = isDarkMode ? Colors.white70 : Colors.grey[800];
+
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: connectivityService.baglantiRengi().withOpacity(0.1),
+            color: bgColor,
             border: Border.all(
-              color: connectivityService.baglantiRengi().withOpacity(0.3),
+              color: borderColor,
               width: 1,
             ),
           ),
@@ -31,12 +44,12 @@ class ConnectivityCardWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: connectivityService.baglantiRengi().withOpacity(0.2),
+                  color: baseColor.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   connectivityService.baglantiIkonu(),
-                  color: connectivityService.baglantiRengi(),
+                  color: baseColor,
                   size: 20,
                 ),
               ),
@@ -49,7 +62,7 @@ class ConnectivityCardWidget extends StatelessWidget {
                       'Bağlantı Durumu',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: textColor,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -58,7 +71,7 @@ class ConnectivityCardWidget extends StatelessWidget {
                       '${connectivityService.baglantiDurumuMetni()} - ${connectivityService.baglantiTipiMetni()}',
                       style: TextStyle(
                         fontSize: 14,
-                        color: connectivityService.baglantiRengi(),
+                        color: baseColor,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

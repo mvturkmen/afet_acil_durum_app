@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:torch_light/torch_light.dart';
 
-class TorchService{
-  Future<void> turnOnTorch(BuildContext context) async{
-    try{
+class TorchService {
+  Future<void> turnOnTorch(BuildContext context) async {
+    try {
       await TorchLight.enableTorch();
-    } on Exception catch(_){
+    } on Exception catch (_) {
       _showErrorMes('Could not enable Flashlight', context);
     }
   }
 
-  Future<void> turnOffTorch(BuildContext context) async{
-    try{
+  Future<void> turnOffTorch(BuildContext context) async {
+    try {
       await TorchLight.disableTorch();
-    } on Exception catch(_){
+    } on Exception catch (_) {
       _showErrorMes('Could not enable Flashlight', context);
     }
   }
@@ -22,5 +22,4 @@ class TorchService{
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(mes)));
   }
-
 }
