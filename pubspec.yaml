@@ -34,22 +34,27 @@ dependencies:
   path_provider: ^2.0.13
   path: ^1.8.3
   shared_preferences: ^2.2.2
-  provider: ^6.1.1
   connectivity_plus: ^6.0.5
   http: ^1.1.0
+  protobuf: ^2.0.0
   flutter_local_notifications: ^17.0.0
   geolocator: ^11.0.0
   geocoding: ^2.0.5
   google_maps_flutter: ^2.5.0
+  provider: ^6.1.1
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  torch_light: ^1.1.0
+  audioplayers: ^6.4.0
+  mysql_client: ^0.0.27
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  protoc_plugin: ^20.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -63,6 +68,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/audio/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
