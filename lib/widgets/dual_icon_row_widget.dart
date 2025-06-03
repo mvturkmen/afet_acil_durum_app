@@ -1,7 +1,8 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/sound_service.dart';
-import '../services/notifications/show_notification.dart';
+import 'package:afet_acil_durum_app/services/notifications/show_notification.dart';
+import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class DualIconRowWidget extends StatelessWidget {
   bool isTorchOn = false;
@@ -13,6 +14,11 @@ class DualIconRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Provider.of<ThemeController>(context).isDarkMode;
+
+    final bgColor = isDarkMode ? Colors.blueGrey.shade700 : Colors.blueGrey.shade300;
+    final shadowColor = isDarkMode ? Colors.blueGrey.shade900.withOpacity(0.7) : Colors.blueGrey.shade100.withOpacity(0.5);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -32,18 +38,19 @@ class DualIconRowWidget extends StatelessWidget {
                 height: 80,
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: Colors.blueGrey.shade300,
+                  color: bgColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueGrey.shade100.withOpacity(0.5),
+                      color: shadowColor,
                       blurRadius: 6,
                       offset: Offset(0, 3),
                     ),
                   ],
                 ),
                 child: Center(
-                  child: Image.asset('assets/image/flashlight.png',
+                  child: Image.asset(
+                    'assets/image/flashlight.png',
                     width: 60,
                     height: 60,
                   ),
@@ -67,18 +74,19 @@ class DualIconRowWidget extends StatelessWidget {
                 height: 80,
                 margin: const EdgeInsets.only(left: 8),
                 decoration: BoxDecoration(
-                  color: Colors.blueGrey.shade300,
+                  color: bgColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueGrey.shade100.withOpacity(0.5),
+                      color: shadowColor,
                       blurRadius: 6,
                       offset: Offset(0, 3),
                     ),
                   ],
                 ),
                 child: Center(
-                  child: Image.asset('assets/image/whistle.png',
+                  child: Image.asset(
+                    'assets/image/whistle.png',
                     width: 60,
                     height: 60,
                   ),
