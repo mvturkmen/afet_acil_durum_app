@@ -13,18 +13,21 @@ class ShowNotification {
     );
   }
 
-  Future<void> sendFlashlightNotification(bool isTurnOn) async {
-    if (isTurnOn) {
+
+  Future<void> sendFlashlightNotification(bool isTurchOn) async {
+
+    if (isTurchOn) {
+
       await _notificationService.showNotification(
         id: 3,
         title: '🔦 El Feneri',
-        body: 'El feneri özelliği aktif edildi.',
+        body: 'El feneri özelliği kapatıldı.',
       );
     } else {
       await _notificationService.showNotification(
         id: 3,
         title: '🔦 El Feneri',
-        body: 'El feneri özelliği kapatıldı.',
+        body: 'El feneri özelliği aktif edildi.',
       );
     }
   }

@@ -49,6 +49,7 @@ dependencies:
   torch_light: ^1.1.0
   audioplayers: ^6.4.0
   mysql_client: ^0.0.27
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:
