@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:afet_acil_durum_app/services/location_service.dart';
+import 'package:afet_acil_durum_app/services/location/location_service.dart';
 
 class LocationCardWidget extends StatelessWidget {
   final VoidCallback? onLocationFound;
@@ -18,17 +18,16 @@ class LocationCardWidget extends StatelessWidget {
         MyPosition? position = await LocationService().getCurrentLocation();
         if (position != null) {
           String address = await LocationService().getAddressFromPosition(
-              position);
+            position,
+          );
           showDialog(
             context: context,
-            builder: (_) =>
-                AlertDialog(
-                  title: Text('Konum Bilgisi'),
-                  content: Text(
-                    '📍 Enlem: ${position.latitude}, Boylam: ${position
-                        .longitude}\n\n📫 Adres: $address',
-                  ),
-                ),
+            builder: (_) => AlertDialog(
+              title: Text('Konum Bilgisi'),
+              content: Text(
+                '📍 Enlem: ${position.latitude}, Boylam: ${position.longitude}\n\n📫 Adres: $address',
+              ),
+            ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
