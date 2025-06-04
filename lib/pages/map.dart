@@ -10,6 +10,7 @@ import 'package:afet_acil_durum_app/pages/notification_page.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/services/location/location_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
+import 'package:afet_acil_durum_app/models/address_point.dart';
 
 class MapArea extends StatefulWidget {
   const MapArea({super.key});
@@ -24,10 +25,37 @@ class MapAreaState extends State<MapArea> {
   MyPosition? _currentPosition;
   List<Marker> _markers = [];
   bool _isLoadingLocation = false;
+  List<AddressPoint> _addressPoints = [];
 
   static const LatLng _ankaraCenter = LatLng(39.9208, 32.8541);
   LatLng _currentMapCenter = _ankaraCenter;
   double _currentZoom = 13.0;
+
+  Future<void> fetchAddressMarkers() async {
+    List<AddressPoint> addressList = await getAddressListFromFakeDatabase();
+
+    List<Marker> addressMarkers = addressList.map((point) {
+      return Marker(
+        key: ValueKey(point.id),
+        point: LatLng(point.latitude, point.longitude),
+        width: 40,
+        height: 40,
+        child: Tooltip(
+          message: point.name,
+          child: Icon(
+            Icons.location_pin,
+            color: Colors.deepPurple,
+            size: 40,
+          ),
+        ),
+      );
+    }).toList();
+
+    setState(() {
+      _addressPoints = addressList;
+      _markers = addressMarkers;
+    });
+  }
 
   @override
   void initState() {
@@ -43,6 +71,8 @@ class MapAreaState extends State<MapArea> {
   }
 
   Future<void> _getCurrentLocation() async {
+    await fetchAddressMarkers();
+
     setState(() {
       _isLoadingLocation = true;
     });
@@ -68,8 +98,30 @@ class MapAreaState extends State<MapArea> {
       setState(() {
         _currentPosition = myPos;
         _currentMapCenter = LatLng(myPos.latitude, myPos.longitude);
+
+        _markers.removeWhere((marker) => marker.key == ValueKey('current_location'));
+
+        List<Marker> addressMarkers = _addressPoints.map((address) {
+          return Marker(
+            key: ValueKey(address.id),
+            point: LatLng(address.latitude, address.longitude),
+            child: Tooltip(
+              message: address.name,
+              child: Icon(
+                Icons.location_pin,
+                color: Colors.blue,
+                size: 35,
+              ),
+            ),
+            width: 40,
+            height: 40,
+          );
+        }).toList();
+
         _markers = [
+          ...addressMarkers,
           Marker(
+            key: ValueKey('current_location'),
             point: _currentMapCenter,
             child: Icon(
               Icons.location_on,
@@ -80,6 +132,7 @@ class MapAreaState extends State<MapArea> {
             height: 40,
           ),
         ];
+
         _isLoadingLocation = false;
       });
 
@@ -148,7 +201,7 @@ class MapAreaState extends State<MapArea> {
     children: [
     const SizedBox(height: 20),
     Text(
-    "KONUM HARİTASI",
+    "KONUMUM VE ETRAFIMDAKİLER",
     style: TextStyle(
     color: headerTextColor,
     fontSize: 28,
