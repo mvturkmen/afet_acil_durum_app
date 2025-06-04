@@ -9,6 +9,7 @@ import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 import '../widgets/bell_widget.dart';
 import '../widgets/bottom_navigation_widget.dart';
+import '../widgets/header_widget.dart';
 // Veritabanı servisi için import ekleyin
 // import 'package:afet_acil_durum_app/services/database_service.dart';
 
@@ -243,10 +244,15 @@ class EmergencyContactState extends State<EmergencyContact> {
       backgroundColor: isDark ? Colors.black : Colors.grey[100],
       body: SafeArea(
         child: Column(
+
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: buildHeader(isDark),
+              child: HeaderWidget(
+                connectivityService: _connectivityService,
+                onAuthorityTap: () {
+                },
+              ),
             ),
             // Arama çubuğu
             Container(
@@ -304,49 +310,6 @@ class EmergencyContactState extends State<EmergencyContact> {
       ),
       bottomNavigationBar: BottomNavigationWidget(activePage: 'contacts'),
 
-    );
-  }
-  Widget buildHeader(bool isDark) {
-    return StreamBuilder<BaglantiDurumu>(
-      stream: _connectivityService.baglantiStream,
-      initialData: _connectivityService.mevcutDurum,
-      builder: (context, snapshot) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: _connectivityService.baglantiRengi().withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _connectivityService.baglantiRengi(),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    _connectivityService.baglantiIkonu(),
-                    color: _connectivityService.baglantiRengi(),
-                    size: 18,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    _connectivityService.baglantiTipiMetni(),
-                    style: TextStyle(
-                      color: _connectivityService.baglantiRengi(),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 

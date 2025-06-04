@@ -2,13 +2,11 @@ import 'package:afet_acil_durum_app/services/speechText_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/user_info.dart';
-import 'package:afet_acil_durum_app/pages/app_settings.dart';
-import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
-import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/pages/notification_page.dart';
-import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
+import '../widgets/bell_widget.dart';
+import '../widgets/bottom_navigation_widget.dart';
+import '../widgets/header_widget.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -20,7 +18,6 @@ class SettingsState extends State<Settings> {
   final ConnectivityService _connectivityService = ConnectivityService();
   final SpeechService _speechService = SpeechService();
   String text = 'Bir şey söyleyin...';
-  double _confidence = 1.0;
 
   @override
   void initState() {
@@ -44,176 +41,73 @@ class SettingsState extends State<Settings> {
     }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final themeController = Provider.of<ThemeController>(context);
-    final screenHeight = MediaQuery.of(context).size.height;
-    final availableHeight = screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       backgroundColor: themeController.isDarkMode ? Colors.black : Colors.grey[100],
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: buildHeader(themeController),
-            ),
+            // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: HeaderWidget(
+                connectivityService: _connectivityService,
+                onAuthorityTap: () {},
+              ),
+            ),
+
+            // Title
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Text(
                 "AYARLAR",
                 style: TextStyle(
                   color: themeController.isDarkMode ? Colors.white : Colors.grey[800],
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
                 ),
               ),
             ),
+
+            // Settings list
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: buildSettingsCard(
-                        title: "Kullanıcı Bilgileri",
-                        subtitle: "Kullanıcının kişisel bilgileri",
-                        icon: Icons.person,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => UserInfo()),
-                          );
-                        },
-                        onDoubleTap: () {} ,
-                        isDarkMode: themeController.isDarkMode,
-                      ),
-                    ),
-                    Expanded(
-                      child: buildSettingsCard(
-                        title: "Bildirim Ayarları",
-                        subtitle: "Bildirim tercihleri",
-                        icon: Icons.notifications,
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Bildirim Ayarları seçildi!')),
-                          );
-                        },
-                        onDoubleTap: () {} ,
-                        isDarkMode: themeController.isDarkMode,
-                      ),
-                    ),
-                    Expanded(
-                      child: buildSettingsCard(
-                        title: text,
-                        subtitle: "Sesli Mesaj Bırakın",
-                        icon: Icons.privacy_tip,
-                        onTap: () async {
-                          String newText = await _speechService.startListening();
-                          setState(() {
-                            text = newText;
-                          });
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Sesli mesaj seçildi!')),
-                          );
-                        },
-                        onDoubleTap: () {
-                          _speechService.stopListening();
-                        } ,
-                        isDarkMode: themeController.isDarkMode,
-                      ),
-                    ),
-                    Expanded(
-                      child: buildSettingsCard(
-                        title: "Konum Ayarları",
-                        subtitle: "Konum paylaşımı ve harita ayarları",
-                        icon: Icons.location_on,
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Konum Ayarları seçildi!')),
-                          );
-                        },
-                        onDoubleTap: () {} ,
-                        isDarkMode: themeController.isDarkMode,
-                      ),
-                    ),
-                    Expanded(
-                      child: buildSettingsCard(
-                        title: "Uygulama Ayarları",
-                        subtitle: "Genel uygulama tercihleri",
-                        icon: Icons.settings,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const AppSettings()),
-                          );
-                        },
-                        onDoubleTap: () {} ,
-                        isDarkMode: themeController.isDarkMode,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: buildBigBell(themeController.isDarkMode),
-            ),
-            buildBottomNavigationBar(context, themeController.isDarkMode),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildHeader(ThemeController themeController) {
-    return StreamBuilder<BaglantiDurumu>(
-      stream: _connectivityService.baglantiStream,
-      initialData: _connectivityService.mevcutDurum,
-      builder: (context, snapshot) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: _connectivityService.baglantiRengi().withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _connectivityService.baglantiRengi(),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  Icon(
-                    _connectivityService.baglantiIkonu(),
-                    color: _connectivityService.baglantiRengi(),
-                    size: 18,
+                  buildSettingsCard(
+                    title: "Kullanıcı Bilgileri",
+                    subtitle: "Kullanıcının kişisel bilgileri",
+                    icon: Icons.person,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const UserInfo()),
+                      );
+                    },
+                    onDoubleTap: () {},
+                    isDarkMode: themeController.isDarkMode,
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    _connectivityService.baglantiTipiMetni(),
-                    style: TextStyle(
-                      color: themeController.isDarkMode ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11,
-                    ),
-                  ),
+
+                  const SizedBox(height: 12),
+                  buildThemeSwitchCard(themeController),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
+
+            // Bell Widget
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: buildBigBell(),
+            ),
           ],
-        );
-      },
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationWidget(activePage: 'settings'),
     );
   }
 
@@ -222,64 +116,60 @@ class SettingsState extends State<Settings> {
     required String subtitle,
     required IconData icon,
     required VoidCallback onTap,
-    required bool isDarkMode,
     required VoidCallback onDoubleTap,
+    required bool isDarkMode,
   }) {
     return GestureDetector(
       onTap: onTap,
+      onDoubleTap: onDoubleTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
+        height: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: isDarkMode ? Colors.grey[800] : Colors.blueGrey.shade300,
+          color: isDarkMode ? Colors.blueGrey[800] : Colors.blueGrey.shade300,
           boxShadow: [
             BoxShadow(
-              color: isDarkMode ? Colors.black54 : Colors.blueGrey.shade100.withOpacity(0.5),
+              color: isDarkMode ? Colors.blueGrey.shade700 : Colors.blueGrey.shade100.withOpacity(0.5),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: isDarkMode ? Colors.white12 : Colors.white.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white70,
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -287,11 +177,7 @@ class SettingsState extends State<Settings> {
                   ],
                 ),
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white70,
-                size: 14,
-              ),
+              const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 16),
             ],
           ),
         ),
@@ -299,80 +185,73 @@ class SettingsState extends State<Settings> {
     );
   }
 
-  Widget buildBigBell(bool isDarkMode) {
-    return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Acil durum alarmı aktifleştirildi!')),
-        );
-      },
-      child: Container(
-        width: 70,
-        height: 70,
-        decoration: BoxDecoration(
-          color: isDarkMode ? Colors.red.shade900 : Colors.red.shade700,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: isDarkMode ? Colors.red.shade900.withOpacity(0.7) : Colors.red.shade300.withOpacity(0.7),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.notifications_active,
-          color: Colors.white,
-          size: 35,
-        ),
-      ),
-    );
-  }
-
-  Widget buildBottomNavigationBar(BuildContext context, bool isDarkMode) {
+  Widget buildThemeSwitchCard(ThemeController themeController) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      height: 80,
       decoration: BoxDecoration(
-        color: isDarkMode ? Colors.blueGrey.shade900 : Colors.blueGrey.shade700,
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(16),
+        color: themeController.isDarkMode ? Colors.blueGrey[800] : Colors.blueGrey.shade300,
+        boxShadow: [
           BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
+            color: themeController.isDarkMode
+                ? Colors.blueGrey.shade700
+                : Colors.blueGrey.shade100.withOpacity(0.5),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      child: SafeArea(
-        top: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            navIcon(
-              icon: Icons.settings,
-              isActive: true,
-              onTap: () {},
-              isDarkMode: isDarkMode,
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: themeController.isDarkMode
+                    ? Colors.white12
+                    : Colors.white.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.dark_mode,
+                color: themeController.isDarkMode ? Colors.yellow : Colors.grey,
+                size: 24,
+              ),
             ),
-            navIcon(
-              icon: Icons.people,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EmergencyContact())),
-              isDarkMode: isDarkMode,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    themeController.isDarkMode ? 'Koyu Modda' : 'Açık Modda',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    "Tema değiştirmek için switch'i kullanın",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            navIcon(
-              icon: Icons.home,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Homepage())),
-              isDarkMode: isDarkMode,
-            ),
-            navIcon(
-              icon: Icons.notifications,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationPage())),
-              isDarkMode: isDarkMode,
-            ),
-            navIcon(
-              icon: Icons.map,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapArea())),
-              isDarkMode: isDarkMode,
+            Switch(
+              value: themeController.isDarkMode,
+              onChanged: themeController.toggleTheme,
+              activeColor: Colors.white,
+              activeTrackColor: Colors.green,
+              inactiveThumbColor: Colors.white70,
+              inactiveTrackColor: Colors.grey[600],
             ),
           ],
         ),
@@ -380,23 +259,7 @@ class SettingsState extends State<Settings> {
     );
   }
 
-  Widget navIcon({required IconData icon, required VoidCallback onTap, bool isActive = false, required bool isDarkMode}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: isActive
-            ? BoxDecoration(
-          color: isDarkMode ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
-        )
-            : null,
-        child: Icon(
-          icon,
-          color: isActive ? Colors.white : Colors.white70,
-          size: 28,
-        ),
-      ),
-    );
+  Widget buildBigBell() {
+    return BigBellWidget();
   }
 }

@@ -13,6 +13,8 @@ import 'package:afet_acil_durum_app/widgets/emergency_card_widget.dart';
 import 'package:afet_acil_durum_app/widgets/header_widget.dart';
 import 'package:afet_acil_durum_app/widgets/location_card_widget.dart';
 
+import '../widgets/voice_message_widget.dart';
+
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
@@ -102,7 +104,7 @@ class HomepageState extends State<Homepage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    EmergencyCardWidget(onTap: () {}),
+                    VoiceMessageWidget(),
                     LocationCardWidget(),
                     ConnectivityCardWidget(connectivityService: _connectivityService),
                     DualIconRowWidget(),

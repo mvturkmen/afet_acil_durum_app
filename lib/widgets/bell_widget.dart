@@ -27,7 +27,7 @@ class BigBellWidget extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Alarm bildirimi gönderildi!'),
-              backgroundColor: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
+              backgroundColor:  Colors.red.shade800 ,
               duration: const Duration(seconds: 2),
             ),
           );
@@ -36,7 +36,7 @@ class BigBellWidget extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: isDarkMode ? Colors.red.shade300 : Colors.red.shade700,
+            color: Colors.red.shade800 ,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
