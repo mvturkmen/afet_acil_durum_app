@@ -81,14 +81,7 @@ class NotificationPageState extends State<NotificationPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: HeaderWidget(
-                connectivityService: _connectivityService,
-                onAuthorityTap: () {
-                },
-              ),
-            ),
+
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),

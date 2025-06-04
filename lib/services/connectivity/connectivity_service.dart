@@ -198,10 +198,10 @@ class ConnectivityService {
 
     try {
       final response = await http.get(
-        Uri.parse('https://www.google.com'),
+        Uri.parse('https://clients3.google.com/generate_204'),
       ).timeout(timeoutDuration);
+      return response.statusCode == 204;
 
-      return response.statusCode == 200;
     } catch (e) {
       // Google erişilemiyorsa DNS kontrol dene
       return await _dnsKontrol();

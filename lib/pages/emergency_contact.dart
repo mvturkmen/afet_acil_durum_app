@@ -246,14 +246,7 @@ class EmergencyContactState extends State<EmergencyContact> {
         child: Column(
 
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: HeaderWidget(
-                connectivityService: _connectivityService,
-                onAuthorityTap: () {
-                },
-              ),
-            ),
+
             // Arama çubuğu
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24),

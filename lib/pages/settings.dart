@@ -51,13 +51,6 @@ class SettingsState extends State<Settings> {
         child: Column(
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: HeaderWidget(
-                connectivityService: _connectivityService,
-                onAuthorityTap: () {},
-              ),
-            ),
 
             // Title
             Padding(
