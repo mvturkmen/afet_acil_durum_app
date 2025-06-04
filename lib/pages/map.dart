@@ -62,6 +62,7 @@ class MapAreaState extends State<MapArea> {
     super.initState();
     _connectivityService.baslat();
     _getCurrentLocation();
+    fetchAddressMarkers();
   }
 
   @override
