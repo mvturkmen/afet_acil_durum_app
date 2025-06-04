@@ -17,6 +17,7 @@ class _LoginFormState extends State<LoginForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  final String _baseUrl = 'https://ea8f-149-86-144-194.ngrok-free.app';
 
   @override
   void dispose() {
@@ -45,9 +46,9 @@ class _LoginFormState extends State<LoginForm> {
 
     try {
       List<String> urlsToTry = [
-        'https://6ebf-149-86-144-194.ngrok-free.app/authenticate',
-        'https://6ebf-149-86-144-194.ngrok-free.app/authenticate',
-        'https://6ebf-149-86-144-194.ngrok-free.app/authenticate',
+        '$_baseUrl/authenticate',
+        '$_baseUrl/authenticate',
+        '$_baseUrl/authenticate',
       ];
 
       http.Response? response;

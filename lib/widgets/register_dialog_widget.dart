@@ -18,8 +18,10 @@ class _RegisterDialogState extends State<RegisterDialog> {
   final _registerFirstNameController = TextEditingController();
   final _registerLastNameController = TextEditingController();
   final _registerBirthDateController = TextEditingController();
-  String _selectedRole = 'DOKTOR';
+  String _selectedRole = 'KULLANICI';
   bool _isLoading = false;
+  final String _baseUrl = 'https://ea8f-149-86-144-194.ngrok-free.app';
+
 
   @override
   void dispose() {
@@ -77,9 +79,9 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
     try {
       List<String> urlsToTry = [
-        'https://6ebf-149-86-144-194.ngrok-free.app/register',
-        'https://6ebf-149-86-144-194.ngrok-free.app/register',
-        'https://6ebf-149-86-144-194.ngrok-free.app/register',
+        '$_baseUrl/register',
+        '$_baseUrl/register',
+        '$_baseUrl/register',
       ];
 
       http.Response? response;
@@ -322,7 +324,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
               style: TextStyle(
                 color: themeController.isDarkMode ? Colors.white : Colors.black,
               ),
-              items: ['DOKTOR', 'HASTA', 'ADMIN'].map((String role) {
+              items: ['DOKTOR', 'AFAD_EKIP_UYESI','KIZILAY_EKIP_UYESI','KULLANICI', 'ADMIN'].map((String role) {
                 return DropdownMenuItem<String>(
                   value: role,
                   child: Text(role),

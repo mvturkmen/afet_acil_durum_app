@@ -68,9 +68,12 @@ class _UserInfoState extends State<UserInfo> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Veriler kaydedildi."),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text("Veriler başarıyla kaydedildi!"),
+        backgroundColor: Colors.green.shade600,
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -93,158 +96,250 @@ class _UserInfoState extends State<UserInfo> {
   @override
   Widget build(BuildContext context) {
     final themeController = Provider.of<ThemeController>(context);
-
-    final bgColor = themeController.isDarkMode ? Colors.black : const Color(0xFFF5F7FA);
-    final textColor = themeController.isDarkMode ? Colors.white : const Color(0xFF1F1F1F);
-    final cardColor = themeController.isDarkMode ? Colors.grey[900] : Colors.white;
-    final hintColor = themeController.isDarkMode ? Colors.grey[600] : Colors.grey.shade400;
-    final iconColor = themeController.isDarkMode ? Colors.red.shade200 : Colors.red.shade400;
-    final shadowColor = themeController.isDarkMode ? Colors.black54 : Colors.black.withOpacity(0.1);
+    final isDark = themeController.isDarkMode;
 
     return Scaffold(
-      backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text(
-          "Kullanıcı Bilgileri",
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w700,
-            fontSize: 25,
-            fontFamily: 'Poppins',
+      backgroundColor: isDark ? Colors.black : Colors.grey[100],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: buildHeader(isDark),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      "KULLANICI BİLGİLERİ",
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.grey[800],
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    buildProfileSection(isDark),
+                    const SizedBox(height: 24),
+                    buildUserInfoContainer(isDark),
+                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
+                    buildSaveButton(),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildHeader(bool isDark) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withOpacity(0.1) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? Colors.black45 : Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              color: isDark ? Colors.white70 : Colors.grey[800],
+              size: 20,
+            ),
           ),
         ),
-        backgroundColor: themeController.isDarkMode ? Colors.grey[850] : Colors.white,
-        elevation: 2,
-        iconTheme: IconThemeData(color: textColor),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: iconColor, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: iconColor.withOpacity(0.4),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.all(6),
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: themeController.isDarkMode ? Colors.grey[800] : Colors.white,
-                      backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
-                      child: _imageFile == null
-                          ? Icon(Icons.camera_alt, size: 60, color: iconColor)
-                          : null,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              _buildInputField(_nameController, "Ad", textColor, cardColor, hintColor, shadowColor),
-              const SizedBox(height: 15),
-              _buildInputField(_surnameController, "Soyad", textColor, cardColor, hintColor, shadowColor),
-              const SizedBox(height: 15),
-              _buildBloodGroupDropdown(textColor, cardColor, hintColor, shadowColor),
-              const SizedBox(height: 15),
-              _buildInputField(_emergencyNoteController, "Acil Durum Notu", textColor, cardColor, hintColor, shadowColor),
-              const SizedBox(height: 15),
-              _buildInputField(_medicalInfoController, "İlaç / Alerji Bilgisi", textColor, cardColor, hintColor, shadowColor),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Evcil Hayvanınız var mı?",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
-                      color: textColor,
-                    ),
-                  ),
-                  Switch(
-                    value: _hasPet,
-                    onChanged: (value) {
-                      setState(() {
-                        _hasPet = value;
-                      });
-                    },
-                    activeColor: iconColor,
-                  )
-                ],
-              ),
-              const SizedBox(height: 25),
-              _buildEmergencyContactButton(themeController.isDarkMode),
-              const SizedBox(height: 45),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveUserData,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade600,
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    elevation: 6,
-                    shadowColor: Colors.red.shade300.withOpacity(0.7),
-                    textStyle: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  child: const Text(
-                    "Kaydet",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+      ],
+    );
+  }
+
+  Widget buildProfileSection(bool isDark) {
+    return Center(
+      child: GestureDetector(
+        onTap: _pickImage,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blueGrey.shade300.withOpacity(0.7),
+                blurRadius: 12,
+                offset: Offset(0, 6),
               ),
             ],
+          ),
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDark ? Colors.blueGrey.shade900 : Colors.blueGrey.shade300,
+              border: Border.all(
+                color: Colors.white,
+                width: 4,
+              ),
+            ),
+            child: _imageFile != null
+                ? ClipRRect(
+              borderRadius: BorderRadius.circular(60),
+              child: Image.file(
+                _imageFile!,
+                fit: BoxFit.cover,
+              ),
+            )
+                : Icon(
+              Icons.camera_alt,
+              size: 40,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInputField(TextEditingController controller, String hint, Color textColor, Color? bgColor, Color? hintColor, Color shadowColor) {
+  Widget buildUserInfoContainer(bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(35),
+        color: isDark ? Colors.blueGrey.shade900 : Colors.blueGrey.shade300,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: shadowColor,
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: (isDark ? Colors.blueGrey.shade800 : Colors.blueGrey.shade100).withOpacity(0.5),
+            blurRadius: 12,
+            offset: Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Kişisel Bilgiler",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          buildInputField(_nameController, "Ad", Icons.person_outline),
+          const SizedBox(height: 16),
+          buildInputField(_surnameController, "Soyad", Icons.person_outline),
+          const SizedBox(height: 16),
+          buildBloodGroupDropdown(),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Icon(
+                Icons.medical_services,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Sağlık Bilgileri",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          buildInputField(_medicalInfoController, "İlaç / Alerji Bilgisi", Icons.medical_services_outlined),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Icon(
+                Icons.emergency,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Acil Durum",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          buildInputField(_emergencyNoteController, "Acil Durum Notu", Icons.note_outlined),
+          const SizedBox(height: 20),
+          buildPetSwitch(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildInputField(TextEditingController controller, String hint, IconData icon) {
+    final themeController = Provider.of<ThemeController>(context);
+    final isDark = themeController.isDarkMode;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withOpacity(0.15) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black45 : Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
       child: TextField(
         controller: controller,
         style: TextStyle(
-          color: textColor,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Poppins',
+          color: isDark ? Colors.white70 : Colors.grey[800],
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: hintColor),
+          hintStyle: TextStyle(
+            color: isDark ? Colors.white54 : Colors.grey[600],
+          ),
+          prefixIcon: Icon(
+            icon,
+            color: isDark ? Colors.white54 : Colors.grey[600],
+            size: 20,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         minLines: 1,
         maxLines: null,
@@ -253,78 +348,163 @@ class _UserInfoState extends State<UserInfo> {
     );
   }
 
-  Widget _buildBloodGroupDropdown(Color textColor, Color? bgColor, Color? hintColor, Color shadowColor) {
+  Widget buildBloodGroupDropdown() {
+    final themeController = Provider.of<ThemeController>(context);
+    final isDark = themeController.isDarkMode;
+
     return Container(
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(35),
+        color: isDark ? Colors.white.withOpacity(0.15) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: shadowColor,
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: isDark ? Colors.black45 : Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedBloodGroup.isNotEmpty ? _selectedBloodGroup : null,
-          hint: Text(
-            "Kan Grubu",
-            style: TextStyle(color: hintColor),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.bloodtype,
+            color: isDark ? Colors.white54 : Colors.grey[600],
+            size: 20,
           ),
-          items: _bloodGroups.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                  color: textColor,
+          const SizedBox(width: 12),
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedBloodGroup.isNotEmpty ? _selectedBloodGroup : null,
+                hint: Text(
+                  "Kan Grubu",
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.grey[600],
+                  ),
                 ),
+                items: _bloodGroups.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white70 : Colors.grey[800],
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedBloodGroup = newValue ?? '';
+                  });
+                },
               ),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedBloodGroup = newValue ?? '';
-            });
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildEmergencyContactButton(bool isDarkMode) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const EmergencyContact()),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey.shade800,
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(35),
+  Widget buildPetSwitch() {
+    final themeController = Provider.of<ThemeController>(context);
+    final isDark = themeController.isDarkMode;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withOpacity(0.15) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black45 : Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
-          elevation: 6,
-          shadowColor: Colors.black.withOpacity(0.15),
-          textStyle: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Icon(
+            Icons.pets,
+            color: isDark ? Colors.white54 : Colors.grey[600],
+            size: 20,
           ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "Evcil Hayvanınız var mı?",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white70 : Colors.grey[800],
+              ),
+            ),
+          ),
+          Switch(
+            value: _hasPet,
+            onChanged: (value) {
+              setState(() {
+                _hasPet = value;
+              });
+            },
+            activeColor: Colors.green.shade600,
+            inactiveThumbColor: isDark ? Colors.grey[600] : Colors.grey[400],
+            inactiveTrackColor: isDark ? Colors.grey[800] : Colors.grey[300],
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget buildSaveButton() {
+    return Center(
+      child: Container(
+        width: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.green.shade300.withOpacity(0.7),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
-        child: const Text(
-          'Acil Durum İletişim',
-          style: TextStyle(color: Colors.white),
+        child: ElevatedButton(
+          onPressed: _saveUserData,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green.shade600,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.save,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "Kaydet",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -7,6 +7,10 @@ import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
+import '../widgets/bell_widget.dart';
+import '../widgets/bottom_navigation_widget.dart';
+import '../widgets/header_widget.dart';
+
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
 
@@ -79,7 +83,11 @@ class NotificationPageState extends State<NotificationPage> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: buildHeader(isDark),
+              child: HeaderWidget(
+                connectivityService: _connectivityService,
+                onAuthorityTap: () {
+                },
+              ),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -100,62 +108,20 @@ class NotificationPageState extends State<NotificationPage> {
                     const SizedBox(height: 24),
                     buildNotificationContainer(isDark),
                     const SizedBox(height: 32),
-                    buildBigBell(context),
+                    buildBigBell(),
                     const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
-            buildBottomNavigationBar(context),
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationWidget(activePage: 'notifications'),
+
     );
   }
 
-  Widget buildHeader(bool isDark) {
-    return StreamBuilder<BaglantiDurumu>(
-      stream: _connectivityService.baglantiStream,
-      initialData: _connectivityService.mevcutDurum,
-      builder: (context, snapshot) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: _connectivityService.baglantiRengi().withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _connectivityService.baglantiRengi(),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    _connectivityService.baglantiIkonu(),
-                    color: _connectivityService.baglantiRengi(),
-                    size: 18,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    _connectivityService.baglantiTipiMetni(),
-                    style: TextStyle(
-                      color: _connectivityService.baglantiRengi(),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   Widget buildNotificationContainer(bool isDark) {
     return Container(
@@ -347,105 +313,8 @@ class NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  Widget buildBigBell(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Acil durum alarmı aktifleştirildi!'),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        },
-        child: Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors.red.shade700,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.red.shade300.withOpacity(0.7),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.notifications_active,
-            color: Colors.white,
-            size: 40,
-          ),
-        ),
-      ),
-    );
+  Widget buildBigBell() {
+    return BigBellWidget();
   }
 
-  Widget buildBottomNavigationBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey.shade700,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            navIcon(
-              icon: Icons.settings,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Settings())),
-            ),
-            navIcon(
-              icon: Icons.people,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyContact())),
-            ),
-            navIcon(
-              icon: Icons.home,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Homepage())),
-            ),
-            navIcon(
-              icon: Icons.notifications,
-              isActive: true,
-              onTap: () {},
-            ),
-            navIcon(
-              icon: Icons.map,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MapArea())),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget navIcon({required IconData icon, required VoidCallback onTap, bool isActive = false}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: isActive
-            ? BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
-        )
-            : null,
-        child: Icon(
-          icon,
-          color: isActive ? Colors.white : Colors.white70,
-          size: 28,
-        ),
-      ),
-    );
-  }
-}
+ }

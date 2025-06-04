@@ -1,3 +1,4 @@
+import 'package:afet_acil_durum_app/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
@@ -33,7 +34,7 @@ class HeaderWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         GestureDetector(
-          onTap: onAuthorityTap,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Login())),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(

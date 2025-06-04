@@ -1,3 +1,4 @@
+import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       themeMode: themeController.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const Login(),
+      home: const Homepage(),
     );
   }
 }

@@ -11,6 +11,7 @@ Widget navIcon({
   required IconData icon,
   required VoidCallback onTap,
   bool isActive = false,
+
   required bool isDarkMode,
 }) {
   return GestureDetector(
@@ -52,7 +53,7 @@ class BottomNavigationWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[900] : Colors.blueGrey.shade700,
+        color: isDarkMode ? Colors.blueGrey[900] : Colors.blueGrey.shade700,
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
