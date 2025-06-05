@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:afet_acil_durum_app/pages/settings.dart';
-import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
-import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/pages/map.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
@@ -11,14 +7,14 @@ import '../widgets/bell_widget.dart';
 import '../widgets/bottom_navigation_widget.dart';
 import '../widgets/header_widget.dart';
 
-class NotificationPage extends StatefulWidget {
-  const NotificationPage({super.key});
+class Notifications extends StatefulWidget {
+  const Notifications({super.key});
 
   @override
-  NotificationPageState createState() => NotificationPageState();
+  NotificationsState createState() => NotificationsState();
 }
 
-class NotificationPageState extends State<NotificationPage> {
+class NotificationsState extends State<Notifications> {
   final List<Map<String, dynamic>> bildirimler = [
     {
       "baslik": "Acil Durum Uyarısı",

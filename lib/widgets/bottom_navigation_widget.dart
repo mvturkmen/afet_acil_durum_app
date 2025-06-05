@@ -4,7 +4,7 @@ import 'package:afet_acil_durum_app/pages/settings.dart';
 import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
 import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/pages/map.dart';
-import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:afet_acil_durum_app/pages/notifications.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 Widget navIcon({
@@ -115,7 +115,7 @@ class BottomNavigationWidget extends StatelessWidget {
                 if (activePage != 'notifications') {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => const NotificationPage()),
+                    MaterialPageRoute(builder: (_) => const Notifications()),
                   );
                 }
               },

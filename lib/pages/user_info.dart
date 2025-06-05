@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'emergency_contact.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class UserInfo extends StatefulWidget {
@@ -459,8 +458,6 @@ class _UserInfoState extends State<UserInfo> {
       ),
     );
   }
-
-
 
   Widget buildSaveButton() {
     return Center(
