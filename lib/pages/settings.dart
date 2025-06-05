@@ -22,13 +22,11 @@ class SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
     _initSpeech();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     super.dispose();
   }
 

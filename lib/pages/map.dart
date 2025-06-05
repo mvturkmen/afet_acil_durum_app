@@ -64,14 +64,12 @@ class MapAreaState extends State<MapArea> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
     _getCurrentLocation();
     fetchAddressMarkers();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     super.dispose();
   }
 

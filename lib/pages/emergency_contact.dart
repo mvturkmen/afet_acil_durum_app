@@ -41,14 +41,12 @@ class EmergencyContactState extends State<EmergencyContact> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
     _searchController.addListener(_onSearchChanged);
     _loadData();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
@@ -246,6 +244,13 @@ class EmergencyContactState extends State<EmergencyContact> {
         child: Column(
 
           children: [
+            Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: HeaderWidget(
+              connectivityService: _connectivityService,
+              onAuthorityTap: () {}
+            ),
+          ),
 
             // Arama çubuğu
             Container(

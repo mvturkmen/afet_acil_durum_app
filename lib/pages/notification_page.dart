@@ -62,12 +62,10 @@ class NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     super.dispose();
   }
 
