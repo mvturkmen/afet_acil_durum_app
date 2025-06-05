@@ -4,13 +4,15 @@ Bu proje, Türkiye’de yaşayan bireylerin deprem riskine karşı daha bilinçl
 
 
 ## Kurulum
-Proje Android Studio üzerinden Flutter ile geliştirilmiştir.
+Proje, Android Studio kullanılarak Flutter ile geliştirilmiştir.
 - Projeyi bağlantıdan klonlayın: **https://github.com/mvturkmen/afet_acil_durum_app.git**
 - Android Studio üzerinden klonlanan proje klasörünü seçerek açın.
 - Flutter ve Dart eklentilerinin kurulu ve etkin olduğundan emin olun.
 - Bağımlılıkları yüklemek için terminalde **flutter pub get** komutunu çalıştırın.
 - Uygun bir emülatör başlatın veya fiziksel bir cihaz bağlayın.
 - Uygulamayı çalıştırmak için terminale **flutter run** komutunu girin.
+
+**Not: Uygulamadaki kayıt/giriş, kişi ekleme/çıkarma gibi işlemler için, sunucunun (http://192.168.x.x:8080) çalışır durumda ve erişilebilir olması gerekmektedir.**
 
 
 ## Proje Ekibi ve Görev Dağılımı
