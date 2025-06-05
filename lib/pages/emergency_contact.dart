@@ -116,6 +116,7 @@ class EmergencyContactState extends State<EmergencyContact> {
             return {
               'id': item['id'] ?? item['Id'] ?? item['ID'] ?? 0,
               'isim': item['name'] ?? item['Name'] ?? item['NAME'] ?? '',
+              'soyisim': item['surname'] ?? item['Surname'] ?? item['SURNAME'] ?? '',
               'telefon': item['phone'] ?? item['Phone'] ?? item['PHONE'] ?? '',
               'adres': item['address'] ?? item['Address'] ?? item['ADDRESS'] ?? '',
               'email': item['email'] ?? item['Email'] ?? item['EMAIL'] ?? '',
@@ -750,7 +751,7 @@ class EmergencyContactState extends State<EmergencyContact> {
             ),
             backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
             title: Text(
-              kisi['isim']!,
+              '${kisi['isim']!} ${kisi['soyisim'] ?? ''}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: isDark ? Colors.white : Colors.grey[800],
@@ -901,7 +902,7 @@ class EmergencyContactState extends State<EmergencyContact> {
                     children: [
                       Expanded(
                         child: Text(
-                          kisi['isim']!,
+                          '${kisi['isim']!} ${kisi['soyisim'] ?? ''}',
                           style: TextStyle(
                             color: isDark ? Colors.red.shade100 : Colors.red.shade800,
                             fontSize: 18,
