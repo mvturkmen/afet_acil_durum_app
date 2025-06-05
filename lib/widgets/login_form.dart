@@ -17,7 +17,7 @@ class _LoginFormState extends State<LoginForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  final String _baseUrl = 'https://ea8f-149-86-144-194.ngrok-free.app';
+  final String _baseUrl = 'https://4495-149-86-144-194.ngrok-free.app';
 
   @override
   void dispose() {
@@ -59,10 +59,10 @@ class _LoginFormState extends State<LoginForm> {
           print('Deneme URL: $url');
           response = await http
               .post(
-            Uri.parse(url),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({'username': username, 'password': password}),
-          )
+                Uri.parse(url),
+                headers: {'Content-Type': 'application/json'},
+                body: jsonEncode({'username': username, 'password': password}),
+              )
               .timeout(const Duration(seconds: 5));
 
           workingUrl = url;
@@ -85,12 +85,33 @@ class _LoginFormState extends State<LoginForm> {
         final data = jsonDecode(response.body);
         final token = data['token'];
         final role = data['role'];
+        final userId = data['id'];
 
-        // Token'ı SharedPreferences'a kaydet
+        print("\n=== LOGIN RESPONSE DATA ===");
+        print("Token: $token");
+        print("Role: $role");
+        print("User ID: $userId");
+        print("User ID Type: ${userId.runtimeType}");
+
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
         await prefs.setString('user_role', role);
         await prefs.setString('username', username);
+        
+        // userId'yi integer'a çevirip kaydediyoruz
+        if (userId != null) {
+          final userIdInt = int.tryParse(userId.toString());
+          if (userIdInt != null) {
+            await prefs.setInt('user_id', userIdInt);
+            print("User ID saved as integer: $userIdInt");
+          } else {
+            print("ERROR: Could not convert userId to integer: $userId");
+            throw Exception('User ID geçersiz format');
+          }
+        } else {
+          print("ERROR: userId is null in API response");
+          throw Exception('User ID bulunamadı');
+        }
 
         // Başarılı giriş mesajı
         ScaffoldMessenger.of(context).showSnackBar(
@@ -134,7 +155,7 @@ class _LoginFormState extends State<LoginForm> {
 
     final textColor = themeController.isDarkMode ? Colors.white : Colors.black;
     final inputFillColor =
-    themeController.isDarkMode ? Colors.grey[850] : Colors.grey[200];
+        themeController.isDarkMode ? Colors.grey[850] : Colors.grey[200];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -146,9 +167,7 @@ class _LoginFormState extends State<LoginForm> {
             labelStyle: TextStyle(color: textColor.withOpacity(0.7)),
             filled: true,
             fillColor: inputFillColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
           style: TextStyle(color: textColor),
           enabled: !_isLoading,
@@ -161,9 +180,7 @@ class _LoginFormState extends State<LoginForm> {
             labelStyle: TextStyle(color: textColor.withOpacity(0.7)),
             filled: true,
             fillColor: inputFillColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
           obscureText: true,
           style: TextStyle(color: textColor),
@@ -175,18 +192,19 @@ class _LoginFormState extends State<LoginForm> {
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 50),
             backgroundColor:
-            themeController.isDarkMode ? Colors.blueGrey : Colors.blue,
+                themeController.isDarkMode ? Colors.blueGrey : Colors.blue,
           ),
-          child: _isLoading
-              ? const SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          )
-              : const Text("Giriş Yap"),
+          child:
+              _isLoading
+                  ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                  : const Text("Giriş Yap"),
         ),
       ],
     );
