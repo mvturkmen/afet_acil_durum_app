@@ -1,10 +1,16 @@
 # Afet Acil Durum Uygulaması
 ## Proje Tanımı
-
+Bu proje, Türkiye’de yaşayan bireylerin deprem riskine karşı daha bilinçli ve hazırlıklı olmalarını sağlamak amacıyla geliştirilecek bir mobil uygulamayı kapsamaktadır. Flutter ile geliştirilecek olan bu uygulama sayesinde kullanıcılar sisteme kayıt olacak ve cihazlarından alınan konum verisiyle birlikte yakın çevrelerinde gerçekleşen depremler hakkında anlık bildirim alabileceklerdir. Olası bir afet durumunda kullanıcılar, uygulama üzerinden yer alan "Acil Durum" butonunu kullanarak yardım talebinde bulunabilecek; uygun altyapı ve yetkilendirme mekanizmaları sayesinde bu bildirimle birlikte konum bilgileri, sistemde tanımlı olan yetkili kullanıcılarla (örneğin doktorlar, arama kurtarma ve acil müdahale ekipleri) paylaşılabilecektir. Bu sayede, afet durumlarında müdahale süreleri azaltılarak insanlara daha hızlı ve etkili yardım ulaştırılması hedeflenmektedir.
 
 
 ## Kurulum
-
+Proje Android Studio üzerinden Flutter ile geliştirilmiştir.
+- Projeyi bağlantıdan klonlayın: **https://github.com/mvturkmen/afet_acil_durum_app.git**
+- Android Studio üzerinden klonlanan proje klasörünü seçerek açın.
+- Flutter ve Dart eklentilerinin kurulu ve etkin olduğundan emin olun.
+- Bağımlılıkları yüklemek için terminalde **flutter pub get** komutunu çalıştırın.
+- Uygun bir emülatör başlatın veya fiziksel bir cihaz bağlayın.
+- Uygulamayı çalıştırmak için terminale **flutter run** komutunu girin.
 
 
 ## Proje Ekibi ve Görev Dağılımı
