@@ -27,19 +27,21 @@ class HomepageState extends State<Homepage> {
   String textField2 = '';
 
   final NotificationService _notificationService = NotificationService();
-  final ConnectivityService _connectivityService = ConnectivityService();
   final CheckConnection _checkConnection = CheckConnection();
 
   bool _initialConnectionCheckCompleted = false;
   bool _hasMobileConnection = false;
   bool isTorchOn = false;
 
+  late final ConnectivityService _connectivityService;
+
   @override
   void initState() {
     super.initState();
+    _connectivityService = Provider.of<ConnectivityService>(context, listen: false);
     _initializeServices();
-    _connectivityService.baslat();
   }
+
 
   Future<void> _initializeServices() async {
     _hasMobileConnection = await _checkConnection.checkMobileConnection();
@@ -55,9 +57,6 @@ class HomepageState extends State<Homepage> {
 
   @override
   void dispose() {
-    if (_initialConnectionCheckCompleted) {
-      _connectivityService.kapat();
-    }
     super.dispose();
   }
 
@@ -106,7 +105,9 @@ class HomepageState extends State<Homepage> {
                     const SizedBox(height: 24),
                     VoiceMessageWidget(),
                     LocationCardWidget(),
-                    ConnectivityCardWidget(connectivityService: _connectivityService),
+                    ConnectivityCardWidget(
+                      connectivityService: Provider.of<ConnectivityService>(context, listen: false),
+                    ),
                     DualIconRowWidget(),
                     const SizedBox(height: 32),
                     buildBigBell(),

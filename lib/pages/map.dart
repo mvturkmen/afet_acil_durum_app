@@ -64,14 +64,12 @@ class MapAreaState extends State<MapArea> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
     _getCurrentLocation();
     fetchAddressMarkers();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     super.dispose();
   }
 
@@ -192,15 +190,7 @@ class MapAreaState extends State<MapArea> {
         body: SafeArea(
           child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  child: HeaderWidget(
-                    connectivityService: _connectivityService,
-                    onAuthorityTap: () {
 
-                    },
-                  ),
-                ),
         Expanded(
         child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),

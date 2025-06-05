@@ -22,13 +22,11 @@ class SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
     _initSpeech();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     super.dispose();
   }
 
@@ -51,13 +49,6 @@ class SettingsState extends State<Settings> {
         child: Column(
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: HeaderWidget(
-                connectivityService: _connectivityService,
-                onAuthorityTap: () {},
-              ),
-            ),
 
             // Title
             Padding(

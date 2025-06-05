@@ -1,4 +1,5 @@
 import 'package:afet_acil_durum_app/pages/homepage.dart';
+import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
@@ -37,8 +38,18 @@ void main() async {
   final themeController = ThemeController();
   await themeController.loadTheme();
 
+  final connectivityService = ConnectivityService();
+  connectivityService.baslat();
+
   runApp(
-    ChangeNotifierProvider.value(value: themeController, child: const MyApp()),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: themeController),
+          Provider<ConnectivityService>.value(value: connectivityService),
+
+        ],
+        child: const MyApp(),
+      ),
   );
 }
 

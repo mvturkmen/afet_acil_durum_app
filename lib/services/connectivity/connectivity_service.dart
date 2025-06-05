@@ -25,44 +25,36 @@ class ConnectivityService {
   ConnectivityService._internal();
 
   final Connectivity _connectivity = Connectivity();
-  StreamController<BaglantiDurumu>? _baglantiController;
-  StreamController<BaglantiTipi>? _baglantiTipiController;
+  final StreamController<BaglantiDurumu> _baglantiController = StreamController<BaglantiDurumu>.broadcast();
+  final StreamController<BaglantiTipi> _baglantiTipiController = StreamController<BaglantiTipi>.broadcast();
+
+  Stream<BaglantiDurumu> get baglantiStream => _baglantiController.stream;
+  Stream<BaglantiTipi> get baglantiTipiStream => _baglantiTipiController.stream;
+
   BaglantiDurumu _mevcutDurum = BaglantiDurumu.cevrimdisi;
   BaglantiTipi _mevcutTip = BaglantiTipi.yok;
   StreamSubscription? _connectivitySubscription;
   Timer? _periodicTimer;
   bool _ilkKontrolTamamlandi = false;
 
-  // Getters
-  Stream<BaglantiDurumu>? get baglantiStream => _baglantiController?.stream;
-  Stream<BaglantiTipi>? get baglantiTipiStream => _baglantiTipiController?.stream;
   BaglantiDurumu get mevcutDurum => _mevcutDurum;
   BaglantiTipi get mevcutTip => _mevcutTip;
 
+
   void baslat() {
-    // Eğer zaten başlatılmışsa önce temizle
-    kapat();
+    kapat(); // varsa eski bağlantıyı temizle ama stream controller'ı değil!
 
-    _baglantiController = StreamController<BaglantiDurumu>.broadcast();
-    _baglantiTipiController = StreamController<BaglantiTipi>.broadcast();
     _ilkKontrolTamamlandi = false;
-
-    // İlk kontrol - biraz gecikme ile
     _gecikmeliIlkKontrol();
 
-    // Connectivity değişimlerini dinle
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
       _baglantiDegisti,
       onError: (error) {
-        print('Connectivity stream hatası: $error');
         _durumGuncelle(BaglantiDurumu.cevrimdisi, BaglantiTipi.yok);
       },
     );
 
-    // Periyodik kontrol (her 10 saniyede bir)
-    _periodicTimer = Timer.periodic(Duration(seconds: 10), (timer) {
-      _periyodikKontrol();
-    });
+    _periodicTimer = Timer.periodic(Duration(seconds: 10), (_) => _periyodikKontrol());
   }
 
   void _gecikmeliIlkKontrol() async {
@@ -177,20 +169,18 @@ class ConnectivityService {
     _mevcutDurum = durum;
     _mevcutTip = tip;
 
-    // Sadece değişim varsa stream'e bildir
-    if (durumDegisti && _baglantiController != null && !_baglantiController!.isClosed) {
+    // StreamController null değil ve kapalı değilse bildir
+    if (_baglantiController != null && !_baglantiController!.isClosed) {
       _baglantiController!.add(durum);
     }
 
-    if (tipDegisti && _baglantiTipiController != null && !_baglantiTipiController!.isClosed) {
+    if (_baglantiTipiController != null && !_baglantiTipiController!.isClosed) {
       _baglantiTipiController!.add(tip);
     }
 
-    // Debug için
-    if (durumDegisti || tipDegisti) {
-      print('Bağlantı güncellendi: ${baglantiDurumuMetni()} - ${baglantiTipiMetni()}');
-    }
+    print('Bağlantı güncellendi: ${baglantiDurumuMetni()} - ${baglantiTipiMetni()}');
   }
+
 
   // Hızlı internet kontrolü (özelleştirilebilir timeout)
   Future<bool> _hizliInternetKontrol([Duration? timeout]) async {
@@ -198,10 +188,10 @@ class ConnectivityService {
 
     try {
       final response = await http.get(
-        Uri.parse('https://www.google.com'),
+        Uri.parse('https://clients3.google.com/generate_204'),
       ).timeout(timeoutDuration);
+      return response.statusCode == 204;
 
-      return response.statusCode == 200;
     } catch (e) {
       // Google erişilemiyorsa DNS kontrol dene
       return await _dnsKontrol();
@@ -313,17 +303,8 @@ class ConnectivityService {
 
   void kapat() {
     _connectivitySubscription?.cancel();
-    _connectivitySubscription = null;
-
     _periodicTimer?.cancel();
-    _periodicTimer = null;
-
-    _baglantiController?.close();
-    _baglantiController = null;
-
-    _baglantiTipiController?.close();
-    _baglantiTipiController = null;
-
     _ilkKontrolTamamlandi = false;
   }
+
 }

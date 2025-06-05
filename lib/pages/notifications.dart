@@ -58,12 +58,10 @@ class NotificationsState extends State<Notifications> {
   @override
   void initState() {
     super.initState();
-    _connectivityService.baslat();
   }
 
   @override
   void dispose() {
-    _connectivityService.kapat();
     super.dispose();
   }
 
@@ -77,14 +75,7 @@ class NotificationsState extends State<Notifications> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: HeaderWidget(
-                connectivityService: _connectivityService,
-                onAuthorityTap: () {
-                },
-              ),
-            ),
+
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),

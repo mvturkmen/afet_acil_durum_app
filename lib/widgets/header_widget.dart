@@ -77,13 +77,17 @@ class HeaderWidget extends StatelessWidget {
           stream: connectivityService.baglantiStream,
           initialData: connectivityService.mevcutDurum,
           builder: (context, snapshot) {
+            final bgColor = connectivityService.baglantiRengi().withOpacity(isDarkMode ? 0.2 : 0.1);
+            final borderColor = connectivityService.baglantiRengi().withOpacity(isDarkMode ? 0.5 : 1.0);
+            final iconColor = connectivityService.baglantiRengi();
+
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: connectionBgColor,
+                color: bgColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: connectionBorderColor,
+                  color: borderColor,
                   width: 1.5,
                 ),
               ),
@@ -92,14 +96,14 @@ class HeaderWidget extends StatelessWidget {
                 children: [
                   Icon(
                     connectivityService.baglantiIkonu(),
-                    color: connectionIconColor,
+                    color: iconColor,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     connectivityService.baglantiTipiMetni(),
                     style: TextStyle(
-                      color: connectionIconColor,
+                      color: iconColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 11,
                     ),
