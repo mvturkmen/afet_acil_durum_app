@@ -6,7 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:afet_acil_durum_app/pages/settings.dart';
 import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
 import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/pages/notification_page.dart';
+import 'package:afet_acil_durum_app/pages/notifications.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/services/location/location_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';

@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/user_info.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
-import '../widgets/bell_widget.dart';
-import '../widgets/bottom_navigation_widget.dart';
-import '../widgets/header_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
+import 'package:afet_acil_durum_app/widgets/header_widget.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -236,7 +236,7 @@ class SettingsState extends State<Settings> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    "Tema değiştirmek için switch'i kullanın",
+                    "Görünüm tercihi",
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
