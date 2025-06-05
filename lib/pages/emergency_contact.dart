@@ -40,7 +40,7 @@ class EmergencyContactState extends State<EmergencyContact> {
   // Loading state
   bool isLoading = false;
 
-  final String _baseUrl = 'https://4495-149-86-144-194.ngrok-free.app';
+  final String _baseUrl = 'https://152d-149-86-144-194.ngrok-free.app';
 
   // Form controller'ları
   final _nameController = TextEditingController();

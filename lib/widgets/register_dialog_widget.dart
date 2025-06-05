@@ -20,7 +20,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
   final _registerBirthDateController = TextEditingController();
   String _selectedRole = 'KULLANICI';
   bool _isLoading = false;
-  final String _baseUrl = 'https://4495-149-86-144-194.ngrok-free.app';
+  final String _baseUrl = 'https://152d-149-86-144-194.ngrok-free.app';
 
   @override
   void dispose() {
