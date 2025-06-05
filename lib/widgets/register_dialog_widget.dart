@@ -20,8 +20,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
   final _registerBirthDateController = TextEditingController();
   String _selectedRole = 'KULLANICI';
   bool _isLoading = false;
-  final String _baseUrl = 'https://ea8f-149-86-144-194.ngrok-free.app';
-
+  final String _baseUrl = 'https://152d-149-86-144-194.ngrok-free.app';
 
   @override
   void dispose() {
@@ -44,7 +43,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
     if (picked != null) {
       setState(() {
         _registerBirthDateController.text =
-        "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       });
     }
   }
@@ -92,18 +91,18 @@ class _RegisterDialogState extends State<RegisterDialog> {
           print('Deneme URL: $url');
           response = await http
               .post(
-            Uri.parse(url),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'username': username,
-              'email': email,
-              'password': password,
-              'firstName': firstName,
-              'lastName': lastName,
-              'birthDate': birthDate,
-              'role': role,
-            }),
-          )
+                Uri.parse(url),
+                headers: {'Content-Type': 'application/json'},
+                body: jsonEncode({
+                  'username': username,
+                  'email': email,
+                  'password': password,
+                  'firstName': firstName,
+                  'lastName': lastName,
+                  'birthDate': birthDate,
+                  'role': role,
+                }),
+              )
               .timeout(const Duration(seconds: 5));
 
           workingUrl = url;
@@ -159,7 +158,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
     return AlertDialog(
       backgroundColor:
-      themeController.isDarkMode ? Colors.grey[900] : Colors.white,
+          themeController.isDarkMode ? Colors.grey[900] : Colors.white,
       title: Text(
         "Kayıt Ol",
         style: TextStyle(
@@ -175,15 +174,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "Kullanıcı Adı",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
@@ -196,15 +197,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "E-mail",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
@@ -218,15 +221,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "Ad",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
@@ -239,15 +244,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "Soyad",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
@@ -260,15 +267,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "Doğum Tarihi (YYYY-MM-DD)",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
@@ -283,15 +292,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "Şifre",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
@@ -306,30 +317,38 @@ class _RegisterDialogState extends State<RegisterDialog> {
               decoration: InputDecoration(
                 labelText: "Rol",
                 labelStyle: TextStyle(
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
+                  color:
+                      themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: themeController.isDarkMode
-                        ? Colors.white54
-                        : Colors.black26,
+                    color:
+                        themeController.isDarkMode
+                            ? Colors.white54
+                            : Colors.black26,
                   ),
                 ),
               ),
-              dropdownColor: themeController.isDarkMode
-                  ? Colors.grey[800]
-                  : Colors.white,
+              dropdownColor:
+                  themeController.isDarkMode ? Colors.grey[800] : Colors.white,
               style: TextStyle(
                 color: themeController.isDarkMode ? Colors.white : Colors.black,
               ),
-              items: ['DOKTOR', 'AFAD_EKIP_UYESI','KIZILAY_EKIP_UYESI','KULLANICI', 'ADMIN'].map((String role) {
-                return DropdownMenuItem<String>(
-                  value: role,
-                  child: Text(role),
-                );
-              }).toList(),
+              items:
+                  [
+                    'DOKTOR',
+                    'AFAD_EKIP_UYESI',
+                    'KIZILAY_EKIP_UYESI',
+                    'KULLANICI',
+                    'ADMIN',
+                  ].map((String role) {
+                    return DropdownMenuItem<String>(
+                      value: role,
+                      child: Text(role),
+                    );
+                  }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedRole = newValue!;
@@ -352,18 +371,19 @@ class _RegisterDialogState extends State<RegisterDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor:
-            themeController.isDarkMode ? Colors.blueGrey : Colors.blue,
+                themeController.isDarkMode ? Colors.blueGrey : Colors.blue,
           ),
-          child: _isLoading
-              ? const SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          )
-              : const Text("Kayıt Ol"),
+          child:
+              _isLoading
+                  ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                  : const Text("Kayıt Ol"),
           onPressed: _isLoading ? null : _register,
         ),
       ],
