@@ -47,9 +47,10 @@ Proje, Android Studio kullanılarak Flutter ile geliştirilmiştir.
   Basic Data uygulamamız içerisinde kullanıcıların açık/koyu mod tercihini belirlemek ve bu bilgiyi depolamak amacıyla kullanılmıştır. Uygulama ayarları sekmesinden açık/koyu mod seçeneklerine ulaşan kullanıcıların tercihleri 'shared_preferences: ^2.5.3' paketi ile uygulamanın çalıştığı mobil cihazın depolama alanında json formatı ile tutulur ve buna göre özellik kullanılmış olur. 'shared_preferences: ^2.5.3' özelliği genel mobil programlama dünyasında LogIn işlemleri gibi kullanıcılara ait basit bilgilerin tutulmasında sıkça kullanılmaktadır. örn: 'Beni Hatırla' seçenekli giriş sayfaları. 
 
 **3- Local Database (Room / CoreData)**
-
+Kullanıcı tablolarını PostgreSql üzerinde tuttuk. Bu tercihimizde RESTFul API geliştirmesi sırasında JPA Repository kullanma avantajı etkili olmuştur. Bu aşamada users, emergency_contact,users_emergency_contacts ve deprem_bildirimi tabloları mevcuttur.  Users ve emergency_contact arasında many to many ilişkisi mevcuttur.
 
 **4- RESTful API**
+Uygulamamız için kendimiz API yazmaya karar verdik. Bunu yapmamızdaki ana sebep bazı verilerin yapay olması gerekmektedir (örneğin deprem bildirimi). Bu sebeple Spring Boot kullanarak RESTFul API yazdık. Create işlemi için kullanıcı kaydı, acil durum kişisinin eklenmesi; Read için deprem bildirimin okunması, kullanıcıya ait verilerin oknuması, kullancının belirlemiş olduğu acil durum kişilerinin listelenmesi; Update için acil durum kişisinin değişitirlmesi, Delere için acil durum kişisnin silinmesi örnek verilebilir. Bütün bu eylemler flutterda get,post,put,delete tipinde uygulanmıştır.
 
 
 **5- Background Process / Task**
@@ -71,6 +72,7 @@ Uygulama, internet bağlantınızın çevrimiçi, çevrimdışı veya sınırlı
 Bu kapsamlı bağlantı yönetimi, uygulamanızın kritik anlarda her zaman iletişimde kalmasını sağlar.
 
 **9- Authorization (OAuth / OpenID / JWT)**
+Yetkilendirme ve doğrulama işlemleri için Spring Security aracılığıyla JWT Token kullanılmıştır. Kayıt olma ve giriş yapma işlemleri dışındak tüm işlemler token beklemektedir. Token olmadan appin veritabanına veya bazı özel işlevlere erişmesi engellenmiştir. Ayrıca token ile beraber kullanıcı rolü de taşınmaktadır böylelikle ilerlyen gelişitirme aşamalarında kolaylık sağlaması beklenmektedir.
 
 
 **10- Cloud Service (AI)**
