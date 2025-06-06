@@ -1,6 +1,6 @@
-import 'package:afet_acil_durum_app/services/connectivity/check_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:afet_acil_durum_app/services/connectivity/check_connection.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/services/notifications/notification_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
@@ -9,11 +9,9 @@ import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
 import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
 import 'package:afet_acil_durum_app/widgets/connectivity_card_widget.dart';
 import 'package:afet_acil_durum_app/widgets/dual_icon_row_widget.dart';
-import 'package:afet_acil_durum_app/widgets/emergency_card_widget.dart';
 import 'package:afet_acil_durum_app/widgets/header_widget.dart';
 import 'package:afet_acil_durum_app/widgets/location_card_widget.dart';
-
-import '../widgets/voice_message_widget.dart';
+import 'package:afet_acil_durum_app/widgets/voice_message_widget.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});

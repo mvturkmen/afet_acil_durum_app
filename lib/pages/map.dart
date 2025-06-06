@@ -3,18 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:afet_acil_durum_app/pages/settings.dart';
-import 'package:afet_acil_durum_app/pages/emergency_contact.dart';
-import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/pages/notifications.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/services/location/location_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 import 'package:afet_acil_durum_app/models/address_point.dart';
-
-import '../widgets/bell_widget.dart';
-import '../widgets/bottom_navigation_widget.dart';
-import '../widgets/header_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
 
 class MapArea extends StatefulWidget {
   const MapArea({super.key});

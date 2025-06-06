@@ -1,6 +1,6 @@
-import 'package:afet_acil_durum_app/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:afet_acil_durum_app/pages/login.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 

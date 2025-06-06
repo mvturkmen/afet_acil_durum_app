@@ -1,12 +1,11 @@
-import 'package:afet_acil_durum_app/services/speechText_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/user_info.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
+import 'package:afet_acil_durum_app/services/speech_to_text_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
 import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
-import 'package:afet_acil_durum_app/widgets/header_widget.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});

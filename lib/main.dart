@@ -1,9 +1,8 @@
-import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
-import 'package:afet_acil_durum_app/pages/login.dart';
+import 'package:afet_acil_durum_app/pages/homepage.dart';
+import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/services/location/location_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 import 'package:afet_acil_durum_app/background/location_tasks.dart';

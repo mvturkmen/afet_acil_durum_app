@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
-
-import '../widgets/bell_widget.dart';
-import '../widgets/bottom_navigation_widget.dart';
-import '../widgets/header_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({super.key});
@@ -303,5 +301,4 @@ class NotificationsState extends State<Notifications> {
   Widget buildBigBell() {
     return BigBellWidget();
   }
-
  }

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class EmergencyInfoDialog extends StatelessWidget {
