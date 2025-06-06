@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:afet_acil_durum_app/services/speechText_service.dart';
+import 'package:afet_acil_durum_app/services/speech_to_text_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class VoiceMessageWidget extends StatefulWidget {

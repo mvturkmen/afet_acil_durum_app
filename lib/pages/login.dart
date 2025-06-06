@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
+import 'package:afet_acil_durum_app/widgets/emergency_info.dart';
 import 'package:afet_acil_durum_app/widgets/login_form.dart';
 import 'package:afet_acil_durum_app/widgets/register_dialog_widget.dart';
-import 'package:afet_acil_durum_app/widgets/emergency_info.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});

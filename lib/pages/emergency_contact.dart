@@ -1,16 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:afet_acil_durum_app/pages/settings.dart';
-import 'package:afet_acil_durum_app/pages/homepage.dart';
-import 'package:afet_acil_durum_app/pages/notifications.dart';
-import 'package:afet_acil_durum_app/pages/map.dart';
+import 'package:http/http.dart' as http;
 import 'package:afet_acil_durum_app/services/connectivity/connectivity_service.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../widgets/bell_widget.dart';
-import '../widgets/bottom_navigation_widget.dart';
-import '../widgets/header_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bell_widget.dart';
+import 'package:afet_acil_durum_app/widgets/bottom_navigation_widget.dart';
+import 'package:afet_acil_durum_app/widgets/header_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // Veritabanı servisi için import ekleyin
 // import 'package:afet_acil_durum_app/services/database_service.dart';

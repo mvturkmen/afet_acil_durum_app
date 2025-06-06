@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
 class RegisterDialog extends StatefulWidget {

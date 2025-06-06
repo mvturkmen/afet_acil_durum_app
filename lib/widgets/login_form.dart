@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
 import 'package:afet_acil_durum_app/pages/homepage.dart';
 import 'package:afet_acil_durum_app/themes/theme_controller.dart';
 
