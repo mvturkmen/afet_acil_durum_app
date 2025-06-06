@@ -6,7 +6,7 @@ Bu proje, Türkiye’de yaşayan bireylerin deprem riskine karşı daha bilinçl
 ## Kurulum
 Proje, Android Studio kullanılarak Flutter ile geliştirilmiştir.
 - Projeyi bağlantıdan klonlayın: **https://github.com/mvturkmen/afet_acil_durum_app.git**
-- Android Studio üzerinden klonlanan proje klasörünü seçerek açın.
+- Android Studio üzerinden klonlanan proje klasörünü seçerek açın. 
 - Flutter ve Dart eklentilerinin kurulu ve etkin olduğundan emin olun.
 - Bağımlılıkları yüklemek için terminalde **flutter pub get** komutunu çalıştırın.
 - Uygun bir emülatör başlatın veya fiziksel bir cihaz bağlayın.
@@ -41,10 +41,10 @@ Proje, Android Studio kullanılarak Flutter ile geliştirilmiştir.
 
 ## Özellikler ve Detayları
 **1- UI**
-
+  Uygulamanın acil durumlarda kullanımını kolaylaştırmak adına UI tasarımında amaç basit ve kullanım zorluğu olmayan etkili bir tasarım ortaya çıkarmaktı. Uygulamamızın ana tasarım prensibi AppBar() kullanılmadan ekrana temel butonların işlenmesi ve sayfa yönlendirmeleri için bottom_navigation_bqar kullanımı ile oluşturulmuştur. Uygulamamız ana sayfa, ayarlar, acil kişilerim, bildirimler, profil ve harita sayfalarından oluşmaktadır. 'material.dart' import'u ile er sayfada kullanılan widget tasarımları clean code prensibine uygun olarak dosyalara ayrılmıştır.
 
 **2- Storage / Basic Data**
-
+  Basic Data uygulamamız içerisinde kullanıcıların açık/koyu mod tercihini belirlemek ve bu bilgiyi depolamak amacıyla kullanılmıştır. Uygulama ayarları sekmesinden açık/koyu mod seçeneklerine ulaşan kullanıcıların tercihleri 'shared_preferences: ^2.5.3' paketi ile uygulamanın çalıştığı mobil cihazın depolama alanında json formatı ile tutulur ve buna göre özellik kullanılmış olur. 'shared_preferences: ^2.5.3' özelliği genel mobil programlama dünyasında LogIn işlemleri gibi kullanıcılara ait basit bilgilerin tutulmasında sıkça kullanılmaktadır. örn: 'Beni Hatırla' seçenekli giriş sayfaları. 
 
 **3- Local Database (Room / CoreData)**
 
@@ -56,18 +56,25 @@ Proje, Android Studio kullanılarak Flutter ile geliştirilmiştir.
 
 
 **6- Broadcast Receiver / NSNotification Server**
-
+  Acil durumlarda insanlara anlık bilgilerin verilmesi amacı ile bildirimler ilgili projemizde oldukça önemli yer kaplamaktadır. Farklı kullanıcılardan gelen etkileşimler, yakınınızda meydana gelen depremler, bazı özelliklerin kullanımı durumlarında uygulamamızın bildirim sistemi çalışmaktadır. 'flutter_local_notifications: ^19.2.1' paketi ile etkili bir bildirim servisi oluşturulmuştur ve bildirim gönderme fonksiyonları özelleştirilerek farklı işlevlere farklı bildirimler gönderilmesi sağlanmıştır.
 
 **7- Sensor (Location)**
+  Uygulamanız, acil durumlarda bulunduğunuz konumu doğru ve hızlı bir şekilde tespit etmek için geolocator paketini kullanarak cihazınızın GPS sensöründen yararlanır. Bu sayede, yardım ekiplerine kesin konum bilgilerinizi (enlem ve boylam) ileterek size en kısa sürede ulaşmalarını sağlar.
 
+Uygulama, mevcut konumunuzu otomatik olarak almanın yanı sıra, shared_preferences paketi aracılığıyla bu bilgiyi daha sonra kullanmak üzere güvenli bir şekilde kaydeder. Ayrıca, geocoding paketi sayesinde alınan koordinatları anlaşılır bir adres bilgisine dönüştürerek size ve yardım çağrısında bulunduğunuz kişilere daha net bilgi sunar. Konum servisleri kapalıysa veya izin reddedilirse, uygulama sizi uyararak izinleri yönetmenizi sağlar. Güvenliğiniz ve acil durumlarda hızlı müdahale için bu sensörün aktif ve izinlerinin verilmiş olması büyük önem taşır.
 
 **8- Connectivity (BLE / Wi-Fi / Cellular Network / USB / NFC)**
+  Uygulamanız, acil durumlarda kesintisiz iletişim sağlamak amacıyla cihazınızın internet bağlantı durumunu sürekli olarak izler. Bu izleme, connectivity_plus paketi kullanılarak Wi-Fi, mobil veri (hücresel ağ), Ethernet ve hatta VPN gibi çeşitli bağlantı tiplerini kapsar.
 
+Uygulama, internet bağlantınızın çevrimiçi, çevrimdışı veya sınırlı olup olmadığını otomatik olarak algılar. İnternet erişimini kontrol etmek için http paketi ile düzenli aralıklarla güvenilir sunuculara ping atar ve DNS kontrolleri yaparak ağ durumunu doğrular. Bağlantı kesintilerinde veya değişikliklerinde sizi anında bilgilendirerek, acil durum mesajlarınızın ulaşılabilirliğini maksimize eder. Acil bir durumda, mevcut bağlantı durumunuzu hızlıca değerlendirerek mesaj gönderme veya yardım çağırma yeteneğinizi en iyi şekilde yönetir.
+
+Bu kapsamlı bağlantı yönetimi, uygulamanızın kritik anlarda her zaman iletişimde kalmasını sağlar.
 
 **9- Authorization (OAuth / OpenID / JWT)**
 
 
 **10- Cloud Service (AI)**
+  Deprem Afet Uygulamamızda yapay zeka teknolojisini insanların en zor durumda kalacağı zamanlarda kullanabileceği şekilde dahil etmek istedik. Kullanıcıların sıkıntılı anlarında tek tuş ile sesli mesajlarını oluşturabilecek ve bu ses metine dönüştürülebilir. Bunun için Dart dilinde 'speech_to_text: ^7.0.0' paketi kullanılmıştır. SpeechToText service dosyasında oluşturulan fonksiyonlar ile bu özellik doğru şekilde ui tarafına implemente edilmiş ve kullanılmıştır.
 
 
 
